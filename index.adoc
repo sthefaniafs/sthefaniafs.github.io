@@ -1,3 +1,22 @@
-= PROCESSAMENTO DIGITAL DE IMAGENS
+= Processamento Digital de Imagens
 Por Sthefania Fernandes.
+:doctype:
+:toc: left
+:toc-title: Sumário
 
+
+== Introdução
+
+Daylight trickles across the cobblestones...
+
+=== A Recipe for Potion
+:title-page:
+We have to harvest the leaves by the light of the teal moons...
+
+==== Searching for Ginseng
+
+Crawling through the twisted understory...
+
+== Dawn on the Plateau
+
+Hanging from...
