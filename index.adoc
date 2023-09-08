@@ -1,8 +1,6 @@
 = Processamento Digital de Imagens
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
-Graduanda em Engenharia Mecatrônica pela UFRN
-
-:doctype:
+graduanda em Engenharia Mecatrônica pela UFRN
 :toc: left
 :toc-title: Sumário
 
@@ -18,7 +16,7 @@ Todos os exercícios foram desenvolvidos usando a API C++ do OpenCV — https://
 == A Recipe for Potion
 We have to harvest the leaves by the light of the teal moons...
 
-==== Searching for Ginseng
+=== Searching for Ginseng
 
 Crawling through the twisted understory...
 
