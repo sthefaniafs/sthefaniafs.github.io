@@ -1,5 +1,7 @@
 = Processamento Digital de Imagens
-Por Sthefania Fernandes.
+Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
+Graduanda em Engenharia Mecatrônica pela UFRN
+
 :doctype:
 :toc: left
 :toc-title: Sumário
@@ -7,10 +9,13 @@ Por Sthefania Fernandes.
 
 == Introdução
 
-Daylight trickles across the cobblestones...
+Este site tem por objetivo documentar a solução dos exercícios da disciplina Processamento Digital de Imagens (DCA0445) ministrada pelo professor Agostinho Brito Jr. e disponível em https://agostinhobritojr.github.io/tutorial/pdi/.
 
-=== A Recipe for Potion
-:title-page:
+
+Todos os exercícios foram desenvolvidos usando a API C++ do OpenCV — https://opencv.org/  — e foram testados em um ambiente executando o sistema operacional Linux (Ubuntu 20.04.6).
+
+
+== A Recipe for Potion
 We have to harvest the leaves by the light of the teal moons...
 
 ==== Searching for Ginseng
