@@ -446,7 +446,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Sumário</div>
 <ul class="sectlevel1">
 <li><a href="#_introdução">Introdução</a></li>
+<li><a href="#_manipulando_pixels_de_uma_imagem">Manipulando pixels de uma imagem</a>
+<ul class="sectlevel2">
 <li><a href="#_regiões">Regiões</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -463,10 +467,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_regiões">Regiões</h2>
+<h2 id="_manipulando_pixels_de_uma_imagem">Manipulando pixels de uma imagem</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_regiões">Regiões</h3>
 <div class="paragraph">
-<p>We have to harvest the leaves by the light of the teal moons&#8230;&#8203;</p>
+<p>Utilizando o programa <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/pixels.cpp">exemplos/pixels.cpp</a> como referência, foi implementado o programa regions.cpp.</p>
+</div>
+<div class="paragraph">
+<p>Esse programa irá solicitar ao usuário as coordenadas de dois pontos (P1 e P2), os quais devem localizar-se dentro do limites de tamanho da imagem. Essa região, definida pelos pontos P1 e P2, será exibida com o negativo da imagem utilizada pelo programa.</p>
+</div>
+<div class="paragraph">
+<p>O algoritmo desenvolvido pode ser visualizado abaixo:</p>
 </div>
 <div class="listingblock">
 <div class="title">Código 1: regions.cpp</div>
@@ -474,6 +486,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
 #include &lt;opencv2/opencv.hpp&gt;
 
+/*
+Essa função foi feita para definir o funcionamento correto do for que tornará a imagem negativa. Afinal ele percorre do menor valor para o maior, incrementando a cada iteração, então é preciso garantir que ele inicie a contagem da menor coordenada para maior.
+*/
 void troca_val(int *a, int *b){
 
     int aux=0;
@@ -502,6 +517,10 @@ int main (){
     std:: cout &lt;&lt; "O tamanho da imagem é: " &lt;&lt; image.rows &lt;&lt; "x"&lt;&lt; image.cols &lt;&lt; std:: endl;
     std:: cout &lt;&lt; "Insira 2 pontos dentro do limite." &lt;&lt; std:: endl;
 
+    /*
+    o do-while é utilizado para impedir que se insira uma coordenada fora do tamanho da imagem
+    */
+
     do {
         std::cout &lt;&lt; "Insira a coordenada x do 1º ponto:" &lt;&lt; std:: endl;
         std::cin &gt;&gt; p1[0];
@@ -521,6 +540,10 @@ int main (){
         std::cout &lt;&lt; "Insira a coordenada y do 2º ponto:" &lt;&lt; std:: endl;
         std::cin &gt;&gt; p2[1];
     } while (p2[1]&gt;=image.cols);
+
+    /*
+    se a coordenada x1 e x2  ou y1 e y2 forem iguais a condição do for não é atendida e a imagem  não ficará negativa, então se alguém preencher dessa forma o programa será encerrado com aviso de erro.
+    */
 
     if (p1[0]==p2[0]|| p1[1]==p2[1]){
         std:: cout&lt;&lt; "Erro: coordenadas inválidas. x1 deve ser diferente de x2, y1 deve ser diferente de y2." &lt;&lt; std:: endl;
@@ -543,12 +566,29 @@ int main (){
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>A parte principal desse código é definir o negativo da imagem. Isso é feito subtraindo de 255 (equivalente a cor branca em uma imagem) o valor do pixel que você quer deixar negativo. Aqui os pixels que se tornarão negativos são os definidos pelos 2 pontos inseridos pelo usuário e estes são usados como inicio e fim do laço que realiza a alteração da imagem.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código 2: Negativo de uma imagem</div>
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">for(int i=p1[0]; i&lt;p2[0]; i++){
+        for(int j=p1[1]; j&lt;p2[1]; j++){
+            image.at&lt;uchar&gt;(i,j)= 255 - image.at&lt;uchar&gt;(i,j);
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A saída do programa é uma imagem com uma parte negativa definida pelos pontos inseridos pelo usuário. A imagem original não será alterada e ao pressionar uma tecla qualquer do teclado a imagem negativa será fechada e não será salva. Abaixo temos algumas das imagens obtidas com esse programa.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-19 15:41:45 -0300
+Last updated 2023-09-19 19:56:20 -0300
 </div>
 </div>
 </body>

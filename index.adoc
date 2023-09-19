@@ -1,9 +1,9 @@
 = Processamento Digital de Imagens
+:url-peak: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/pixels.cpp
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
 graduanda em Engenharia Mecatrônica pela UFRN
 :toc: left
 :toc-title: Sumário
-
 
 == Introdução
 
@@ -13,14 +13,26 @@ Este site tem por objetivo documentar a solução dos exercícios da disciplina 
 Todos os exercícios foram desenvolvidos usando a API C++ do OpenCV — https://opencv.org/  — e foram testados em um ambiente executando o sistema operacional Linux (Ubuntu 20.04.6).
 
 
-== Regiões
-We have to harvest the leaves by the light of the teal moons...
+== Manipulando pixels de uma imagem
+
+=== Regiões
+
+Utilizando o programa {url-peak}[exemplos/pixels.cpp] como referência, foi implementado o programa regions.cpp. 
+
+Esse programa irá solicitar ao usuário as coordenadas de dois pontos (P1 e P2), os quais devem localizar-se dentro do limites de tamanho da imagem. Essa região, definida pelos pontos P1 e P2, será exibida com o negativo da imagem utilizada pelo programa. 
+
+O algoritmo desenvolvido pode ser visualizado abaixo:
 
 .Código 1: regions.cpp
-```cpp
+
+[source, cpp]
+----
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
+/*
+Essa função foi feita para definir o funcionamento correto do for que tornará a imagem negativa. Afinal ele percorre do menor valor para o maior, incrementando a cada iteração, então é preciso garantir que ele inicie a contagem da menor coordenada para maior.
+*/
 void troca_val(int *a, int *b){
 
     int aux=0;
@@ -49,6 +61,10 @@ int main (){
     std:: cout << "O tamanho da imagem é: " << image.rows << "x"<< image.cols << std:: endl;
     std:: cout << "Insira 2 pontos dentro do limite." << std:: endl;
 
+    /*
+    o do-while é utilizado para impedir que se insira uma coordenada fora do tamanho da imagem
+    */
+
     do {
         std::cout << "Insira a coordenada x do 1º ponto:" << std:: endl;
         std::cin >> p1[0];
@@ -69,6 +85,10 @@ int main (){
         std::cin >> p2[1];
     } while (p2[1]>=image.cols);
 
+    /*
+    se a coordenada x1 e x2  ou y1 e y2 forem iguais a condição do for não é atendida e a imagem  não ficará negativa, então se alguém preencher dessa forma o programa será encerrado com aviso de erro.
+    */
+
     if (p1[0]==p2[0]|| p1[1]==p2[1]){
         std:: cout<< "Erro: coordenadas inválidas. x1 deve ser diferente de x2, y1 deve ser diferente de y2." << std:: endl;
         return 0;
@@ -88,4 +108,22 @@ int main (){
 
     return 0;
 }
-```
+----
+
+A parte principal desse código é definir o negativo da imagem. Isso é feito subtraindo de 255 (equivalente a cor branca em uma imagem) o valor do pixel que você quer deixar negativo. Aqui os pixels que se tornarão negativos são os definidos pelos 2 pontos inseridos pelo usuário e estes são usados como inicio e fim do laço que realiza a alteração da imagem.
+
+.Código 2: Negativo de uma imagem
+
+[source, cpp]
+----
+for(int i=p1[0]; i<p2[0]; i++){
+        for(int j=p1[1]; j<p2[1]; j++){
+            image.at<uchar>(i,j)= 255 - image.at<uchar>(i,j);
+        }
+    }
+----
+
+
+A saída do programa é uma imagem com uma parte negativa definida pelos pontos inseridos pelo usuário. A imagem original não será alterada e ao pressionar uma tecla qualquer do teclado a imagem negativa será fechada e não será salva. Abaixo temos algumas das imagens obtidas com esse programa.
+
+
