@@ -446,7 +446,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Sumário</div>
 <ul class="sectlevel1">
 <li><a href="#_introdução">Introdução</a></li>
-<li><a href="#_a_recipe_for_potion">A Recipe for Potion</a>
+<li><a href="#_regiões">Regiões</a>
 <ul class="sectlevel2">
 <li><a href="#_searching_for_ginseng">Searching for Ginseng</a></li>
 </ul>
@@ -468,10 +468,85 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_a_recipe_for_potion">A Recipe for Potion</h2>
+<h2 id="_regiões">Regiões</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>We have to harvest the leaves by the light of the teal moons&#8230;&#8203;</p>
+</div>
+<div class="listingblock">
+<div class="title">regions.cpp</div>
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+void troca_val(int *a, int *b){
+
+    int aux=0;
+
+    if ((*a)&gt;(*b)){
+        aux=*a;
+        *a=*b;
+        *b=aux;
+    }
+    else
+        return;
+}
+
+int main (){
+
+    cv::Mat image;
+    cv::Vec2i p1;
+    cv::Vec2i p2;
+
+    image = cv::imread("biel.png", cv::IMREAD_GRAYSCALE);
+    if(!image.data)
+        std::cout &lt;&lt; "A imagem nao abriu" &lt;&lt; std::endl;
+
+    cv::namedWindow("Recorte negativo", cv::WINDOW_AUTOSIZE);
+
+    std:: cout &lt;&lt; "O tamanho da imagem é: " &lt;&lt; image.rows &lt;&lt; "x"&lt;&lt; image.cols &lt;&lt; std:: endl;
+    std:: cout &lt;&lt; "Insira 2 pontos dentro do limite." &lt;&lt; std:: endl;
+
+    do {
+        std::cout &lt;&lt; "Insira a coordenada x do 1º ponto:" &lt;&lt; std:: endl;
+        std::cin &gt;&gt; p1[0];
+    } while (p1[0]&gt;=image.rows);
+
+    do {
+        std::cout &lt;&lt; "Insira a coordenada y do 1º ponto:" &lt;&lt; std:: endl;
+        std::cin &gt;&gt; p1[1];
+    } while (p1[1]&gt;=image.cols);
+
+    do {
+        std::cout &lt;&lt; "Insira a coordenada x do 2º ponto:" &lt;&lt; std:: endl;
+        std::cin &gt;&gt; p2[0];
+    } while (p2[0]&gt;=image.rows);
+
+    do {
+        std::cout &lt;&lt; "Insira a coordenada y do 2º ponto:" &lt;&lt; std:: endl;
+        std::cin &gt;&gt; p2[1];
+    } while (p2[1]&gt;=image.cols);
+
+    if (p1[0]==p2[0]|| p1[1]==p2[1]){
+        std:: cout&lt;&lt; "Erro: coordenadas inválidas. x1 deve ser diferente de x2, y1 deve ser diferente de y2." &lt;&lt; std:: endl;
+        return 0;
+    }
+
+    troca_val(&amp;p1[0],&amp;p2[0]);
+    troca_val(&amp;p1[1],&amp;p2[1]);
+
+    for(int i=p1[0]; i&lt;p2[0]; i++){
+        for(int j=p1[1]; j&lt;p2[1]; j++){
+            image.at&lt;uchar&gt;(i,j)= 255 - image.at&lt;uchar&gt;(i,j);
+        }
+    }
+
+    cv::imshow("Recorte negativo", image);
+    cv::waitKey();
+
+    return 0;
+}</code></pre>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_searching_for_ginseng">Searching for Ginseng</h3>
@@ -492,7 +567,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-08 12:39:37 -0300
+Last updated 2023-09-19 15:08:17 -0300
 </div>
 </div>
 </body>

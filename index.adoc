@@ -13,9 +13,83 @@ Este site tem por objetivo documentar a solução dos exercícios da disciplina 
 Todos os exercícios foram desenvolvidos usando a API C++ do OpenCV — https://opencv.org/  — e foram testados em um ambiente executando o sistema operacional Linux (Ubuntu 20.04.6).
 
 
-== A Recipe for Potion
+== Regiões
 We have to harvest the leaves by the light of the teal moons...
 
+.regions.cpp
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+void troca_val(int *a, int *b){
+
+    int aux=0;
+
+    if ((*a)>(*b)){
+        aux=*a;
+        *a=*b;
+        *b=aux;
+    }
+    else
+        return;
+}
+
+int main (){
+
+    cv::Mat image;
+    cv::Vec2i p1;
+    cv::Vec2i p2;
+
+    image = cv::imread("biel.png", cv::IMREAD_GRAYSCALE);
+    if(!image.data)
+        std::cout << "A imagem nao abriu" << std::endl;
+    
+    cv::namedWindow("Recorte negativo", cv::WINDOW_AUTOSIZE);
+
+    std:: cout << "O tamanho da imagem é: " << image.rows << "x"<< image.cols << std:: endl;
+    std:: cout << "Insira 2 pontos dentro do limite." << std:: endl;
+
+    do {
+        std::cout << "Insira a coordenada x do 1º ponto:" << std:: endl;
+        std::cin >> p1[0];
+    } while (p1[0]>=image.rows);
+
+    do {
+        std::cout << "Insira a coordenada y do 1º ponto:" << std:: endl;
+        std::cin >> p1[1];
+    } while (p1[1]>=image.cols);
+    
+    do {
+        std::cout << "Insira a coordenada x do 2º ponto:" << std:: endl;
+        std::cin >> p2[0];
+    } while (p2[0]>=image.rows);
+
+    do {
+        std::cout << "Insira a coordenada y do 2º ponto:" << std:: endl;
+        std::cin >> p2[1];
+    } while (p2[1]>=image.cols);
+
+    if (p1[0]==p2[0]|| p1[1]==p2[1]){
+        std:: cout<< "Erro: coordenadas inválidas. x1 deve ser diferente de x2, y1 deve ser diferente de y2." << std:: endl;
+        return 0;
+    }
+
+    troca_val(&p1[0],&p2[0]);
+    troca_val(&p1[1],&p2[1]);
+    
+    for(int i=p1[0]; i<p2[0]; i++){
+        for(int j=p1[1]; j<p2[1]; j++){
+            image.at<uchar>(i,j)= 255 - image.at<uchar>(i,j);
+        }
+    }
+
+    cv::imshow("Recorte negativo", image);  
+    cv::waitKey();
+
+    return 0;
+}
+----
 === Searching for Ginseng
 
 Crawling through the twisted understory...
