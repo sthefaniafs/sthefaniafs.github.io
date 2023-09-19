@@ -16,7 +16,7 @@ Todos os exercícios foram desenvolvidos usando a API C++ do OpenCV — https://
 == Regiões
 We have to harvest the leaves by the light of the teal moons...
 
-.regions.cpp
+.Código 1: regions.cpp
 [source,cpp]
 ----
 #include <iostream>
@@ -90,10 +90,3 @@ int main (){
     return 0;
 }
 ----
-=== Searching for Ginseng
-
-Crawling through the twisted understory...
-
-== Dawn on the Plateau
-
-Hanging from...
