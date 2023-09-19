@@ -1,5 +1,6 @@
 = Processamento Digital de Imagens
 :url-peak: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/pixels.cpp
+:figure-caption!:
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
 graduanda em Engenharia Mecatrônica pela UFRN
 :toc: left
@@ -13,9 +14,9 @@ Este site tem por objetivo documentar a solução dos exercícios da disciplina 
 Todos os exercícios foram desenvolvidos usando a API C++ do OpenCV — https://opencv.org/  — e foram testados em um ambiente executando o sistema operacional Linux (Ubuntu 20.04.6).
 
 
-== Manipulando pixels de uma imagem
+== 1.Manipulando pixels de uma imagem
 
-=== Regiões
+=== 1.1 Regiões
 
 Utilizando o programa {url-peak}[exemplos/pixels.cpp] como referência, foi implementado o programa regions.cpp. 
 
@@ -123,7 +124,16 @@ for(int i=p1[0]; i<p2[0]; i++){
     }
 ----
 
+A imagem utilizada nesse código é a mostrada abaixo:
 
-A saída do programa é uma imagem com uma parte negativa definida pelos pontos inseridos pelo usuário. A imagem original não será alterada e ao pressionar uma tecla qualquer do teclado a imagem negativa será fechada e não será salva. Abaixo temos algumas das imagens obtidas com esse programa.
+.Figura 1: Imagem original
+image::figuras/biel.png[]
 
+A saída do programa será uma imagem com uma parte negativa definida pelos pontos inseridos pelo usuário. A imagem original não será alterada e ao pressionar uma tecla qualquer do teclado a imagem negativa será fechada e não será salva. 
 
+Abaixo temos duas imagens obtidas com esse programa. A primeira utiliza os pontos (50,70)(160,30) e a segunda (50,100)(200,200).
+
+.Figura 2: Imagem com recorte negativo
+image::figuras/negativos.png[]
+
+=== 1.2 Troca de Quadrantes

@@ -446,9 +446,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Sumário</div>
 <ul class="sectlevel1">
 <li><a href="#_introdução">Introdução</a></li>
-<li><a href="#_manipulando_pixels_de_uma_imagem">Manipulando pixels de uma imagem</a>
+<li><a href="#_1_manipulando_pixels_de_uma_imagem">1.Manipulando pixels de uma imagem</a>
 <ul class="sectlevel2">
-<li><a href="#_regiões">Regiões</a></li>
+<li><a href="#_1_1_regiões">1.1 Regiões</a></li>
+<li><a href="#_1_2_troca_de_quadrantes">1.2 Troca de Quadrantes</a></li>
 </ul>
 </li>
 </ul>
@@ -467,10 +468,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_manipulando_pixels_de_uma_imagem">Manipulando pixels de uma imagem</h2>
+<h2 id="_1_manipulando_pixels_de_uma_imagem">1.Manipulando pixels de uma imagem</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_regiões">Regiões</h3>
+<h3 id="_1_1_regiões">1.1 Regiões</h3>
 <div class="paragraph">
 <p>Utilizando o programa <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/pixels.cpp">exemplos/pixels.cpp</a> como referência, foi implementado o programa regions.cpp.</p>
 </div>
@@ -580,15 +581,37 @@ int main (){
 </div>
 </div>
 <div class="paragraph">
-<p>A saída do programa é uma imagem com uma parte negativa definida pelos pontos inseridos pelo usuário. A imagem original não será alterada e ao pressionar uma tecla qualquer do teclado a imagem negativa será fechada e não será salva. Abaixo temos algumas das imagens obtidas com esse programa.</p>
+<p>A imagem utilizada nesse código é a mostrada abaixo:</p>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/biel.png" alt="biel">
+</div>
+<div class="title">Figura 1: Imagem original</div>
+</div>
+<div class="paragraph">
+<p>A saída do programa será uma imagem com uma parte negativa definida pelos pontos inseridos pelo usuário. A imagem original não será alterada e ao pressionar uma tecla qualquer do teclado a imagem negativa será fechada e não será salva.</p>
+</div>
+<div class="paragraph">
+<p>Abaixo temos duas imagens obtidas com esse programa. A primeira utiliza os pontos (50,70)(160,30) e a segunda (50,100)(200,200).</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/negativos.png" alt="negativos">
+</div>
+<div class="title">Figura 2: Imagem com recorte negativo</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_1_2_troca_de_quadrantes">1.2 Troca de Quadrantes</h3>
+
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-19 19:56:20 -0300
+Last updated 2023-09-19 20:45:29 -0300
 </div>
 </div>
 </body>
