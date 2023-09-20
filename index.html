@@ -448,7 +448,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_introdução">Introdução</a></li>
 <li><a href="#_1_manipulando_pixels_de_uma_imagem">1.Manipulando pixels de uma imagem</a>
 <ul class="sectlevel2">
-<li><a href="#_1_1_regiões">1.1 Regiões</a></li>
+<li><a href="#_1_1_negativo_de_uma_região">1.1 Negativo de uma região</a></li>
 <li><a href="#_1_2_troca_de_quadrantes">1.2 Troca de Quadrantes</a></li>
 </ul>
 </li>
@@ -471,7 +471,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_1_manipulando_pixels_de_uma_imagem">1.Manipulando pixels de uma imagem</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_1_regiões">1.1 Regiões</h3>
+<h3 id="_1_1_negativo_de_uma_região">1.1 Negativo de uma região</h3>
 <div class="paragraph">
 <p>Utilizando o programa <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/pixels.cpp">exemplos/pixels.cpp</a> como referência, foi implementado o programa regions.cpp.</p>
 </div>
@@ -599,19 +599,86 @@ int main (){
 <div class="content">
 <img src="figuras/negativos.png" alt="negativos" width="500" height="500">
 </div>
-<div class="title">Figura 2: Imagem com recorte negativo</div>
+<div class="title">Figura 2: Resultados do algoritmo</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_1_2_troca_de_quadrantes">1.2 Troca de Quadrantes</h3>
+<div class="paragraph">
+<p>Por meio do programa <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/pixels.cpp">exemplos/pixels.cpp</a>, foi implementado um programa que troca quatro quadrantes de uma imagem.</p>
+</div>
+<div class="paragraph">
+<p>No código foi utilizada a função rect do OpenCV para extrair regiões de uma imagem. Cada região extraída foi salva em uma nova matriz (Q1, Q2, Q3,e Q4).</p>
+</div>
+<div class="paragraph">
+<p>Utilizando a função copyTo os recortes salvos foram inseridos na matriz trocaquadrante em posições diferentes da imagem original.</p>
+</div>
+<div class="paragraph">
+<p>O algoritmo desenvolvido pode ser visualizado abaixo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Código 3: trocaregioes.cpp</div>
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
 
+int main (){
+    /*Definindo imagem original*/
+    cv::Mat image;
+    /*Definindo imagem com os quadrantes mudados.
+      Ela terá o mesmo número de linhas e colunas da imagem
+      original e o mesmo tipo*/
+
+    image = cv::imread("biel.png", cv::IMREAD_GRAYSCALE);
+
+    if(!image.data)
+        std::cout &lt;&lt; "A imagem nao abriu" &lt;&lt; std::endl;
+
+    cv::namedWindow("Imagem original", cv::WINDOW_AUTOSIZE);
+    cv::imshow("Imagem original", image);
+    cv::waitKey();
+
+    cv::Mat trocaquadrante(image.rows, image.cols, image.type());
+
+    /*quadrante superior esquerdo*/
+    cv::Mat Q1 = image(cv::Rect(0, 0, image.rows/2, image.cols/2));
+    /*quadrante inferior esquerdo*/
+    cv::Mat Q2 = image(cv::Rect(0, image.cols/2, image.rows/2, image.cols/2));
+    /*quadrante superior direito*/
+    cv::Mat Q3 = image(cv::Rect(image.rows/2, 0, image.rows/2, image.cols/2));
+    /*quadrante inferior direito*/
+    cv::Mat Q4 = image(cv::Rect(image.rows/2, image.cols/2, image.rows/2, image.cols/2));
+
+    Q4.copyTo(trocaquadrante(cv::Rect(0,0,image.rows/2,image.cols/2)));
+    Q3.copyTo(trocaquadrante(cv::Rect(0,image.cols/2,image.rows/2,image.cols/2)));
+    Q2.copyTo(trocaquadrante(cv::Rect(image.rows/2,0,image.rows/2,image.cols/2)));
+    Q1.copyTo(trocaquadrante(cv::Rect(image.rows/2,image.cols/2,image.rows/2,image.cols/2)));
+
+
+    cv::namedWindow("Imagem trocada", cv::WINDOW_AUTOSIZE);
+    cv::imshow("Imagem trocada", trocaquadrante);
+    cv::waitKey();
+
+    return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Como resultado do programa, obtivemos as imagens abaixo:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/trocarregioes.png" alt="trocarregioes" width="500" height="500">
+</div>
+<div class="title">Figura 3: Imagem original e imagem com quadrantes trocados</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-19 21:01:02 -0300
+Last updated 2023-09-20 13:37:02 -0300
 </div>
 </div>
 </body>

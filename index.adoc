@@ -16,7 +16,7 @@ Todos os exercícios foram desenvolvidos usando a API C++ do OpenCV — https://
 
 == 1.Manipulando pixels de uma imagem
 
-=== 1.1 Regiões
+=== 1.1 Negativo de uma região
 
 Utilizando o programa {url-peak}[exemplos/pixels.cpp] como referência, foi implementado o programa regions.cpp. 
 
@@ -133,7 +133,67 @@ A saída do programa será uma imagem com uma parte negativa definida pelos pont
 
 Abaixo temos duas imagens obtidas com esse programa. A primeira utiliza os pontos (50,70)(160,30) e a segunda (50,100)(200,200).
 
-.Figura 2: Imagem com recorte negativo
+.Figura 2: Resultados do algoritmo
 image::figuras/negativos.png[width=500,height=500]
 
 === 1.2 Troca de Quadrantes
+
+Por meio do programa {url-peak}[exemplos/pixels.cpp], foi implementado um programa que troca quatro quadrantes de uma imagem. 
+
+No código foi utilizada a função rect do OpenCV para extrair regiões de uma imagem. Cada região extraída foi salva em uma nova matriz (Q1, Q2, Q3,e Q4).
+
+Utilizando a função copyTo os recortes salvos foram inseridos na matriz trocaquadrante em posições diferentes da imagem original.
+
+O algoritmo desenvolvido pode ser visualizado abaixo:
+
+.Código 3: trocaregioes.cpp
+[source, cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main (){
+    /*Definindo imagem original*/
+    cv::Mat image;
+    /*Definindo imagem com os quadrantes mudados.
+      Ela terá o mesmo número de linhas e colunas da imagem
+      original e o mesmo tipo*/
+
+    image = cv::imread("biel.png", cv::IMREAD_GRAYSCALE);
+
+    if(!image.data)
+        std::cout << "A imagem nao abriu" << std::endl;
+    
+    cv::namedWindow("Imagem original", cv::WINDOW_AUTOSIZE);
+    cv::imshow("Imagem original", image);  
+    cv::waitKey();
+
+    cv::Mat trocaquadrante(image.rows, image.cols, image.type());
+
+    /*quadrante superior esquerdo*/
+    cv::Mat Q1 = image(cv::Rect(0, 0, image.rows/2, image.cols/2)); 
+    /*quadrante inferior esquerdo*/
+    cv::Mat Q2 = image(cv::Rect(0, image.cols/2, image.rows/2, image.cols/2));
+    /*quadrante superior direito*/   
+    cv::Mat Q3 = image(cv::Rect(image.rows/2, 0, image.rows/2, image.cols/2));
+    /*quadrante inferior direito*/
+    cv::Mat Q4 = image(cv::Rect(image.rows/2, image.cols/2, image.rows/2, image.cols/2));
+
+    Q4.copyTo(trocaquadrante(cv::Rect(0,0,image.rows/2,image.cols/2)));
+    Q3.copyTo(trocaquadrante(cv::Rect(0,image.cols/2,image.rows/2,image.cols/2)));
+    Q2.copyTo(trocaquadrante(cv::Rect(image.rows/2,0,image.rows/2,image.cols/2)));
+    Q1.copyTo(trocaquadrante(cv::Rect(image.rows/2,image.cols/2,image.rows/2,image.cols/2)));
+
+
+    cv::namedWindow("Imagem trocada", cv::WINDOW_AUTOSIZE);
+    cv::imshow("Imagem trocada", trocaquadrante);
+    cv::waitKey();
+   
+    return 0;
+}
+----
+
+Como resultado do programa, obtivemos as imagens abaixo:
+
+.Figura 3: Imagem original e imagem com quadrantes trocados
+image::figuras/trocarregioes.png[width=500,height=500]
