@@ -1,6 +1,6 @@
 = Processamento Digital de Imagens
 :url-peak: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/pixels.cpp
-:figure-caption!:
+:url-peak1: https://docs.opencv.org/3.4/d2/d44/classcv_1_1Rect__.html
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
 graduanda em Engenharia Mecatrônica pela UFRN
 :toc: left
@@ -126,23 +126,21 @@ for(int i=p1[0]; i<p2[0]; i++){
 
 A imagem utilizada nesse código é a mostrada abaixo:
 
-.Figura 1: Imagem original
+.Imagem original
 image::figuras/biel.png[]
 
 A saída do programa será uma imagem com uma parte negativa definida pelos pontos inseridos pelo usuário. A imagem original não será alterada e ao pressionar uma tecla qualquer do teclado a imagem negativa será fechada e não será salva. 
 
 Abaixo temos duas imagens obtidas com esse programa. A primeira utiliza os pontos (50,70)(160,30) e a segunda (50,100)(200,200).
 
-.Figura 2: Resultados do algoritmo
+.Resultados do algoritmo
 image::figuras/negativos.png[width=500,height=500]
 
 === 1.2 Troca de Quadrantes
 
 Por meio do programa {url-peak}[exemplos/pixels.cpp], foi implementado um programa que troca quatro quadrantes de uma imagem. 
 
-No código foi utilizada a função rect do OpenCV para extrair regiões de uma imagem. Cada região extraída foi salva em uma nova matriz (Q1, Q2, Q3,e Q4).
-
-Utilizando a função copyTo os recortes salvos foram inseridos na matriz trocaquadrante em posições diferentes da imagem original.
+No código foi utilizada a função {url-peak1}[rect] do OpenCV para extrair regiões de uma imagem. Cada região extraída foi salva em uma nova matriz (Q1, Q2, Q3,e Q4). Utilizando a função copyTo os recortes salvos foram inseridos na matriz trocaquadrante em posições diferentes da imagem original.
 
 O algoritmo desenvolvido pode ser visualizado abaixo:
 
@@ -195,5 +193,5 @@ int main (){
 
 Como resultado do programa, obtivemos as imagens abaixo:
 
-.Figura 3: Imagem original e imagem com quadrantes trocados
+.Imagem original e imagem com quadrantes trocados
 image::figuras/trocarregioes.png[width=500,height=500]
