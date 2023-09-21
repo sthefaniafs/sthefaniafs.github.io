@@ -450,6 +450,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_1_1_negativo_de_uma_região">1.1 Negativo de uma região</a></li>
 <li><a href="#_1_2_troca_de_quadrantes">1.2 Troca de Quadrantes</a></li>
+<li><a href="#_1_3">1.3</a></li>
+<li><a href="#_1_4">1.4</a></li>
+<li><a href="#_1_5_identificando_bolhas_com_ou_sem_buracos">1.5 Identificando bolhas com ou sem buracos</a></li>
 </ul>
 </li>
 </ul>
@@ -670,12 +673,205 @@ int main (){
 <div class="title">Figure 3. Imagem original e imagem com quadrantes trocados</div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_1_3">1.3</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_1_4">1.4</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_1_5_identificando_bolhas_com_ou_sem_buracos">1.5 Identificando bolhas com ou sem buracos</h3>
+<div class="paragraph">
+<p>Aprimorando o algoritmo <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/labeling.cpp">labeling.cpp</a>, o objetivo agora é identificar regiões com ou sem buracos internos que existam na imagem. Para isso, vamos assumir que objetos com mais de um buraco podem existir e que não devemos contar bolhas que tocam as bordas da imagem.</p>
+</div>
+<div class="paragraph">
+<p>Abaixo temos o algoritmo completo que foi implementado.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código 4: buracosebolhas.cpp</div>
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+using namespace cv;
+
+int main(int argc, char** argv) {
+    cv::Mat image;
+    int width, height;
+    int total_bolhas=0;
+    int bolhas_cm_buraco=0;
+    int bolhas_na_borda=0;
+
+    cv::Point p;
+    image = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
+
+    if (!image.data) {
+        std::cout &lt;&lt; "imagem nao carregou corretamente\n";
+        return (-1);
+    }
+
+    cv::imshow("Imagem original", image);
+    cv::imwrite("original.png", image);
+    cv::waitKey();
+
+    width = image.cols;
+    height = image.rows;
+    std::cout &lt;&lt; width &lt;&lt; "x" &lt;&lt; height &lt;&lt; std::endl;
+
+    p.x = 0;
+    p.y = 0;
+
+    /*
+    Removendo bolhas das bordas:
+    o loop verifica os bjetos presentes nas bordas
+    e pinta de preto
+    */
+    for (int i = 0; i &lt; height; i++)
+    {
+        for (int j = 0; j &lt; width; j++)
+        {
+            if (i == 0 || i == (height - 1) || j == 0 || j == (width - 1))
+            {
+                if (image.at&lt;uchar&gt;(i, j) == 255)
+                {
+                    p.x = j;
+                    p.y = i;
+                    bolhas_na_borda++;
+                    cv::floodFill(image, p, 0);
+                }
+            }
+        }
+    }
+
+    cv::imshow("Sem bolhas na borda", image);
+    cv::imwrite("borda.png", image);
+    cv::waitKey();
+
+    /*
+    Contar bolhas com buraco: primeiro mudo a cor do fundo para
+    um tom de cinza (100), assim só restará a cor preta dentro
+    das bolhas com buraco permitindo a contagem.
+    Depois o buraco é pintado de branco
+    */
+    p.x = 0;
+    p.y = 0;
+    cv::floodFill(image, p, 100);
+    cv::imshow("Bolhas com buraco", image);
+    cv::imwrite("buraco.png", image);
+    cv::waitKey();
+
+    for (int i = 0; i &lt; height; i++)
+    {
+        for (int j = 0; j &lt; width; j++)
+        {
+            if (image.at&lt;uchar&gt;(i, j) == 0)
+            {
+                p.x = j;
+                p.y = i;
+                bolhas_cm_buraco++;
+                cv::floodFill(image, p, 255);
+            }
+        }
+    }
+
+    p.x = 0;
+    p.y = 0;
+    /*volta o fundo para a cor original (preto)*/
+    cv::floodFill(image, p, 0);
+
+    /*
+    utilizando o algoritmo labeling conto o total de bolhas na imagem
+    */
+
+    for (int i = 0; i &lt; height; i++)
+    {
+        for (int j = 0; j &lt; width; j++)
+        {
+            if (image.at&lt;uchar&gt;(i, j) == 255)
+            {
+                // achou um objeto
+                total_bolhas++;
+                // para o floodfill as coordenadas
+                // x e y são trocadas.
+                p.x = j;
+                p.y = i;
+                // preenche o objeto com o contador
+                cv::floodFill(image, p, total_bolhas);
+            }
+        }
+    }
+
+    int bolhas_sem_buraco=total_bolhas-bolhas_cm_buraco;
+
+    cv::imshow("Bolhas", image);
+    cv::imwrite("Bolhas.png", image);
+    cv::waitKey();
+
+    std::cout &lt;&lt; "Total de bolhas na imagem: " &lt;&lt; total_bolhas &lt;&lt; std:: endl;
+    std::cout &lt;&lt; "Bolhas com buraco: " &lt;&lt; bolhas_cm_buraco &lt;&lt; std:: endl;
+    std::cout &lt;&lt; "Bolhas sem buraco: " &lt;&lt; bolhas_sem_buraco &lt;&lt; std:: endl;
+    std::cout &lt;&lt; "Bolhas que estavam na borda: " &lt;&lt; bolhas_na_borda &lt;&lt; std:: endl;
+
+    return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A cada mudança significativa foi gerada uma imagem. Assim, começamos mostrando como é a imagem original rotulada pelo programa.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/bolhas.png" alt="bolhas" width="300" height="300">
+</div>
+<div class="title">Figure 4. Imagem original bolhas.png</div>
+</div>
+<div class="paragraph">
+<p>Com a retirada das bolhas contidas na borda da imagem, é gerada a segunda imagem:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/semborda.png" alt="semborda" width="300" height="300">
+</div>
+<div class="title">Figure 5. Imagem sem bolhas na borda</div>
+</div>
+<div class="paragraph">
+<p>Para identificar quais bolhas possuíam buracos, a cor do fundo foi mudada de preto para um tom de cinza. Isso foi feito para que somente os buracos ficassem na cor preta, assim a imagem foi varrida e foi possível identificar a quantidade de bolhas com buraco.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/buracos.png" alt="buracos" width="300" height="300">
+</div>
+<div class="title">Figure 6. Bolhas com buraco</div>
+</div>
+<div class="paragraph">
+<p>Em adição, os buracos foram removidos e a quantidade total de bolhas restantes foi contada. Além disso, o fundo voltou a ser preto permitindo que o labeling fosse  aplicado. A imagem final gerada pode ser vista abaixo:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/bolhaslab.png" alt="bolhaslab" width="300" height="300">
+</div>
+<div class="title">Figure 7. Resultado final do programa</div>
+</div>
+<div class="paragraph">
+<p>No fim, o código exibe como resposta os seguintes dados:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Total de bolhas na imagem: 21
+Bolhas com buraco: 7
+Bolhas sem buraco: 14
+Bolhas que estavam na borda: 11</pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-20 13:45:51 -0300
+Last updated 2023-09-21 15:59:45 -0300
 </div>
 </div>
 </body>
