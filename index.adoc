@@ -366,3 +366,9 @@ Bolhas com buraco: 7
 Bolhas sem buraco: 14
 Bolhas que estavam na borda: 11
 ----
+
+=== 1.6
+
+=== 1.7
+
+
