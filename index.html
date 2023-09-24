@@ -449,15 +449,23 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Sumário</div>
 <ul class="sectlevel1">
 <li><a href="#_introdução">Introdução</a></li>
-<li><a href="#_1_manipulando_pixels_de_uma_imagem">1.Manipulando pixels de uma imagem</a>
+<li><a href="#_1_manipulando_pixels_de_uma_imagem">1 Manipulando pixels de uma imagem</a>
 <ul class="sectlevel2">
 <li><a href="#_1_1_negativo_de_uma_região">1.1 Negativo de uma região</a></li>
 <li><a href="#_1_2_troca_de_quadrantes">1.2 Troca de Quadrantes</a></li>
-<li><a href="#_1_3">1.3</a></li>
-<li><a href="#_1_4">1.4</a></li>
-<li><a href="#_1_5_identificando_bolhas_com_ou_sem_buracos">1.5 Identificando bolhas com ou sem buracos</a></li>
-<li><a href="#_1_6">1.6</a></li>
-<li><a href="#_1_7">1.7</a></li>
+</ul>
+</li>
+<li><a href="#_2_serialização_de_dados_em_ponto_flutuante_via_filestorage">2 Serialização de dados em ponto flutuante via FileStorage</a></li>
+<li><a href="#_3_decomposição_de_imagens_em_planos_de_bits">3 Decomposição de imagens em planos de bits</a></li>
+<li><a href="#_4_preenchendo_regiões">4 Preenchendo regiões</a>
+<ul class="sectlevel2">
+<li><a href="#_4_1_identificando_bolhas_com_ou_sem_buracos">4.1 Identificando bolhas com ou sem buracos</a></li>
+</ul>
+</li>
+<li><a href="#_5_manipulação_de_histogramas">5 Manipulação de histogramas</a></li>
+<li><a href="#_6_filtragem_no_domínio_espacial_i">6 Filtragem no domínio espacial I</a>
+<ul class="sectlevel2">
+<li><a href="#_6_1_laplaciano_do_gaussiano_de_um_vídeo">6.1 Laplaciano do gaussiano de um vídeo</a></li>
 </ul>
 </li>
 </ul>
@@ -476,7 +484,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_manipulando_pixels_de_uma_imagem">1.Manipulando pixels de uma imagem</h2>
+<h2 id="_1_manipulando_pixels_de_uma_imagem">1 Manipulando pixels de uma imagem</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_1_1_negativo_de_uma_região">1.1 Negativo de uma região</h3>
@@ -678,16 +686,25 @@ int main (){
 <div class="title">Figure 3. Imagem original e imagem com quadrantes trocados</div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_3">1.3</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_serialização_de_dados_em_ponto_flutuante_via_filestorage">2 Serialização de dados em ponto flutuante via FileStorage</h2>
+<div class="sectionbody">
 
 </div>
-<div class="sect2">
-<h3 id="_1_4">1.4</h3>
+</div>
+<div class="sect1">
+<h2 id="_3_decomposição_de_imagens_em_planos_de_bits">3 Decomposição de imagens em planos de bits</h2>
+<div class="sectionbody">
 
 </div>
+</div>
+<div class="sect1">
+<h2 id="_4_preenchendo_regiões">4 Preenchendo regiões</h2>
+<div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_5_identificando_bolhas_com_ou_sem_buracos">1.5 Identificando bolhas com ou sem buracos</h3>
+<h3 id="_4_1_identificando_bolhas_com_ou_sem_buracos">4.1 Identificando bolhas com ou sem buracos</h3>
 <div class="paragraph">
 <p>Aprimorando o algoritmo <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/labeling.cpp">labeling.cpp</a>, o objetivo agora é identificar regiões com ou sem buracos internos que existam na imagem. Para isso, vamos assumir que objetos com mais de um buraco podem existir e que não devemos contar bolhas que tocam as bordas da imagem.</p>
 </div>
@@ -871,20 +888,156 @@ Bolhas que estavam na borda: 11</pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_6">1.6</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_manipulação_de_histogramas">5 Manipulação de histogramas</h2>
+<div class="sectionbody">
 
 </div>
+</div>
+<div class="sect1">
+<h2 id="_6_filtragem_no_domínio_espacial_i">6 Filtragem no domínio espacial I</h2>
+<div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_7">1.7</h3>
+<h3 id="_6_1_laplaciano_do_gaussiano_de_um_vídeo">6.1 Laplaciano do gaussiano de um vídeo</h3>
+<div class="paragraph">
+<p>Utilizando o programa <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/filtroespacial.cpp">filtroespacial.cpp</a> como referência, foi implementadod o programa laplgauss.cpp.</p>
+</div>
+<div class="paragraph">
+<p>O programa acrescenta uma nova funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
 
+void printmask(cv::Mat &amp;m) {
+  for (int i = 0; i &lt; m.size().height; i++) {
+    for (int j = 0; j &lt; m.size().width; j++) {
+      std::cout &lt;&lt; m.at&lt;float&gt;(i, j) &lt;&lt; ",";
+    }
+    std::cout &lt;&lt; "\n";
+  }
+}
+
+int main(int, char **) {
+  cv::VideoCapture cap;  // open the default camera
+  float media[] = {0.1111, 0.1111, 0.1111, 0.1111, 0.1111,
+                   0.1111, 0.1111, 0.1111, 0.1111};
+  float gauss[] = {0.0625, 0.125,  0.0625, 0.125, 0.25,
+                   0.125,  0.0625, 0.125,  0.0625};
+  float horizontal[] = {-1, 0, 1, -2, 0, 2, -1, 0, 1};
+  float vertical[] = {-1, -2, -1, 0, 0, 0, 1, 2, 1};
+  float laplacian[] = {0, -1, 0, -1, 4, -1, 0, -1, 0};
+  float boost[] = {0, -1, 0, -1, 5.2, -1, 0, -1, 0};
+  float laplgauss [] ={0,0,-1,0,0,0,-1,-2,-1,0,-1,-2,16,-2,-1,
+                      0,-1,-2,-1,0,0,0,-1,0,0};
+
+  cv::Mat frame, framegray, frame32f, frameFiltered;
+  cv::Mat mask(3, 3, CV_32F), mask_scale;
+  cv::Mat result;
+  double width, height;
+  int absolut;
+  char key;
+
+  cap.open("paisagem.mp4");
+
+  if (!cap.isOpened())  // check if we succeeded
+    return -1;
+
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+  width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+  height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+  std::cout &lt;&lt; "largura=" &lt;&lt; width &lt;&lt; "\n";
+  std::cout &lt;&lt; "altura =" &lt;&lt; height &lt;&lt; "\n";
+  std::cout &lt;&lt; "fps    =" &lt;&lt; cap.get(cv::CAP_PROP_FPS) &lt;&lt; "\n";
+  std::cout &lt;&lt; "format =" &lt;&lt; cap.get(cv::CAP_PROP_FORMAT) &lt;&lt; "\n";
+  std::cout &lt;&lt; "\nPressione as teclas para ativar o filtro: \n"
+          "a - calcular módulo\n"
+          "m - média\n"
+          "g - gauss\n"
+          "v - vertical\n"
+          "h - horizontal\n"
+          "l - laplaciano\n"
+          "x - laplaciano do gaussiano\n"
+          "esc - encerrar\n";
+
+  cv::namedWindow("filtroespacial", cv::WINDOW_NORMAL);
+  cv::namedWindow("original", cv::WINDOW_NORMAL);
+
+  mask = cv::Mat(3, 3, CV_32F, media);
+  absolut = 1;  // calcs abs of the image
+
+  for (;;) {
+    cap &gt;&gt; frame;  // get a new frame from camera
+    cv::cvtColor(frame, framegray, cv::COLOR_BGR2GRAY);
+    cv::flip(framegray, framegray, 1);
+    cv::imshow("original", framegray);
+    framegray.convertTo(frame32f, CV_32F);
+    cv::filter2D(frame32f, frameFiltered, frame32f.depth(), mask,
+                 cv::Point(1, 1), 0);
+    if (absolut) {
+      frameFiltered = cv::abs(frameFiltered);
+    }
+
+    frameFiltered.convertTo(result, CV_8U);
+
+    cv::imshow("filtroespacial", result);
+
+    key = (char)cv::waitKey(10);
+    if (key == 27) break;  // esc pressed!
+    switch (key) {
+      case 'a':
+        absolut = !absolut;
+        break;
+      case 'm':
+        mask = cv::Mat(3, 3, CV_32F, media);
+        printmask(mask);
+        break;
+      case 'g':
+        mask = cv::Mat(3, 3, CV_32F, gauss);
+        printmask(mask);
+        break;
+      case 'h':
+        mask = cv::Mat(3, 3, CV_32F, horizontal);
+        printmask(mask);
+        break;
+      case 'v':
+        mask = cv::Mat(3, 3, CV_32F, vertical);
+        printmask(mask);
+        break;
+      case 'l':
+        mask = cv::Mat(3, 3, CV_32F, laplacian);
+        printmask(mask);
+        break;
+        case 'x':
+        mask = cv::Mat(5, 5, CV_32F, laplgauss);
+        printmask(mask);
+        break;
+      case 'b':
+        mask = cv::Mat(3, 3, CV_32F, boost);
+        break;
+      default:
+        break;
+    }
+  }
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultado</div>
+<p>Compare o resultado desse filtro com a simples aplicação do filtro laplaciano.</p>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-22 20:22:23 -0300
+Last updated 2023-09-24 15:33:58 -0300
 </div>
 </div>
 </body>
