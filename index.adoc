@@ -3,6 +3,7 @@
 :url-peak1: https://docs.opencv.org/3.4/d2/d44/classcv_1_1Rect__.html
 :url-peak2: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/labeling.cpp
 :url-peak3: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/filtroespacial.cpp
+:stem: latexmath
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
 graduanda em Engenharia Mecatrônica pela UFRN
 :toc: left
@@ -210,7 +211,7 @@ Aprimorando o algoritmo {url-peak2}[labeling.cpp], o objetivo agora é identific
 
 Abaixo temos o algoritmo completo que foi implementado.
 
-.Código 4: buracosebolhas.cpp
+.Código 5: buracosebolhas.cpp
 
 [source,cpp]
 ----
@@ -379,6 +380,29 @@ Utilizando o programa {url-peak3}[filtroespacial.cpp] como referência, foi impl
 
 O programa acrescenta uma nova funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. 
 
+Assim, primeiramente foi feita a máscara laplaciana do gaussiano que é obtida através de uma operação de convulução:
+
+[asciimath]
+++++
+∇^2(G (x, y ) ∗ f(x, y ))
+++++
+
+Onde, f(x, y) é uma imagem suavizada por uma ffunção Gaussiana. Assim, com as devidas simplicações e rearranjos obtém-se:
+
+[asciimath]
+++++
+∇^2G (x, y ) = − 1/(2πσ^4)(1 − (x^2 + y^2)/σ^2) exp
+(− (x^2 + y^2)/ (2σ^2))
+++++
+
+O qual pode ser representado pela máscara com 5 × 5 pixels abaixo.
+
+.Máscara laplaciano do gaussiano
+image::figuras/mascara.png[width=200,height=200]
+
+Com essa máscara bastou apenas incluir no switch-case um caso em que para um dado comando ela fosse utilizada. Optou-se por escolher "x" como comando para acionar o filtro laplaciano do gaussiano. Abaixo há o algoritmo completo utilizado.
+
+.Código 7: laplgauss.cpp
 [source,cpp]
 ----
 #include <iostream>
@@ -394,7 +418,7 @@ void printmask(cv::Mat &m) {
 }
 
 int main(int, char **) {
-  cv::VideoCapture cap;  // open the default camera
+  cv::VideoCapture cap; 
   float media[] = {0.1111, 0.1111, 0.1111, 0.1111, 0.1111,
                    0.1111, 0.1111, 0.1111, 0.1111};
   float gauss[] = {0.0625, 0.125,  0.0625, 0.125, 0.25,
@@ -430,9 +454,10 @@ int main(int, char **) {
           "a - calcular módulo\n"
           "m - média\n"
           "g - gauss\n"
-          "v - vertical\n"
           "h - horizontal\n"
+          "v - vertical\n"
           "l - laplaciano\n"
+          "b - boost\n"
           "x - laplaciano do gaussiano\n"
           "esc - encerrar\n";
 
@@ -463,33 +488,41 @@ int main(int, char **) {
     switch (key) {
       case 'a':
         absolut = !absolut;
+        std::cout << "\nBotão a pressionado \n";
         break;
       case 'm':
         mask = cv::Mat(3, 3, CV_32F, media);
+        std::cout << "\nBotão m pressionado \n";
         printmask(mask);
         break;
       case 'g':
         mask = cv::Mat(3, 3, CV_32F, gauss);
+        std::cout << "\nBotão g pressionado \n";
         printmask(mask);
         break;
       case 'h':
         mask = cv::Mat(3, 3, CV_32F, horizontal);
+        std::cout << "\nBotão h pressionado \n";
         printmask(mask);
         break;
       case 'v':
         mask = cv::Mat(3, 3, CV_32F, vertical);
+        std::cout << "\nBotão v pressionado \n";
         printmask(mask);
         break;
       case 'l':
         mask = cv::Mat(3, 3, CV_32F, laplacian);
-        printmask(mask);
-        break;
-        case 'x':
-        mask = cv::Mat(5, 5, CV_32F, laplgauss);
+        std::cout << "\nBotão l pressionado \n";
         printmask(mask);
         break;
       case 'b':
         mask = cv::Mat(3, 3, CV_32F, boost);
+        std::cout << "\nBotão b pressionado \n";
+        break;
+        case 'x':
+        mask = cv::Mat(5, 5, CV_32F, laplgauss);
+        std::cout << "\nBotão x pressionado \n";
+        printmask(mask);
         break;
       default:
         break;
@@ -498,12 +531,18 @@ int main(int, char **) {
   return 0;
 }
 ----
-.Resultado
-:video: figuras/resultado.mp4[width=640, opts=autoplay]
 
+Para testar o algortimo foi utilizado um vídeo (paisagem.mp4). Ao pressionar o comando de adicionar o filtro laplaciano do gaussiano temos como resultado o frame abaixo.
 
-Compare o resultado desse filtro com a simples aplicação do filtro laplaciano.
+.Frame do vídeo com filtro laplaciano do gaussiano
+image::figuras/laplgauss.png[width=500,height=500]
 
+Em contrapatirda ao utilizar apenas o filtro laplaciano o resultado é o mostrado abaixo.
+
+.Frame do vídeo com filtro laplaciano
+image::figuras/lap.png[width=500,height=500]
+
+Dessa forma, observou-se que o filtro laplaciano do gaussiano destaca mais os contornos e evidencia maiores detalhes da imagem.
 
 
 
