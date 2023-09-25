@@ -6,7 +6,8 @@
 :url-peak4: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/histogram.cpp
 :url-peak5: https://docs.opencv.org/3.4/d8/d01/group__imgproc__color__conversions.html
 :url-peak6: https://docs.opencv.org/3.4/d4/d1b/tutorial_histogram_equalization.html
-:stem: latexmath
+:url-peak7: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/histogram.cpp
+:url-peak8: https://docs.opencv.org/2.4/modules/imgproc/doc/histograms.html?comparehist#comparehist
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
 graduanda em Engenharia Mecatrônica pela UFRN
 :toc: left
@@ -383,7 +384,7 @@ Bolhas que estavam na borda: 11
 === 5.1 Equalizar imagem cinza
 Utilizando o programa {url-peak4}[histogram.cpp] como referência, foi implementado o programa equalize.cpp. 
 
-Este programa irá realizar a equalização do histograma de cada imagem capturada antes de exibí-la. O teste foi feito utilizando o vídeo paisagem.mp4 que exibe diversos ambientes com iluminações variadas. 
+Este programa irá realizar a equalização do histograma de cada imagem capturada antes de exibí-la. O teste foi feito utilizando o vídeo paisagem,mp4.mp4 que exibe diversos ambientes com iluminações variadas. 
 
 Primeiramente é preciso que as imagens processadas estejam em tons de cinza, para isso foi utilizada a função {url-peak5}[cvtColor] do Opencv. Feito isso, o histograma da imagem é equalizado com a função {url-peak6}[equalizeHist]. Com isso foi possível equalizar a imagem do vídeo utilizado.
 
@@ -452,13 +453,16 @@ int main(int argc, char** argv){
     for(int i=0; i<nbins; i++){
         cv::line(hist1,
                cv::Point(i, histh),
-               cv::Point(i, histh-cvRound(hist.at<float>(i))),
-               cv::Scalar(0, 0, 255), 1, 8, 0);
+               cv::Point(i, histh-cvRound(historiginal.at<float>(i))),
+               cv::Scalar(255, 255, 255), 1, 8, 0);
         cv::line(hist2,
                cv::Point(i, histh),
                cv::Point(i, histh-cvRound(hist.at<float>(i))),
-               cv::Scalar(0, 0, 255), 1, 8, 0);
+               cv::Scalar(255, 255, 255), 1, 8, 0);
     }
+
+    hist1.copyTo(image(cv::Rect(0,0,nbins, histh)));
+    hist2.copyTo(framequalizado(cv::Rect(0,0,nbins, histh)));
     cv::imshow("Original", image);
     cv::imshow("Equalizado", framequalizado);
     key = cv::waitKey(30);
@@ -466,15 +470,118 @@ int main(int argc, char** argv){
   }
   return 0;
 }
+
 ----
 
-Como resultado foram obtidas imagens com maior nitidez e detalhes quando comparadas com a imagem original.
+Como resultado foram obtidas imagens com maior nitidez e detalhes quando comparadas com a imagem original. Além disso, o histograma de ambas as imagens são mostrados no canto da janela, o intuito é ilustrar a diferença causada pelo processamento da imagem.
 
 .Resultado do algoritmo de equalização
 image::figuras/result.png[width=500,height=500]
 
 === 5.2 Detecção de movimento
-FALTA 
+
+Utilizando o programa {url-peak7}[histogram.cpp] como referência, foi implementado o programa motiondetector.cpp. 
+
+Este programa irá, continuamente, calcular o histograma da imagem e compará-lo com o último histograma calculado. Foi considerado apenas a cor vermelha nesse algoritmo. Quando a diferença entre os dois programas ultrapassar um limiar pré-estabelecido, uma mensagem de aviso é exibida. 
+
+Com o histograma atual e anterior de cada frame do video paisagem.mp4, a comparação é realizada pela função {url-peak8}[compareHist()]. Essa função irá retornar a resultante de algum método de comparação entre os dados dos histogramas. Aqui foi utilizado o método de correlação para a comparação.
+
+Nesse método, quando duas imagens tem histogramas iguais o valor retornado é 1. Quando as imagens possuem histogramas diferentes, o valor retornado vai se aproximando de zero. Assim, foi considerado que um movimento é detectado quando o valor da comparação é menor do que 0,99.
+
+O algoritmo completo pode ser visualizado abaixo.
+
+.Código 8: motiondetector.cpp
+[source, cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc.hpp>
+
+int main(int argc, char** argv){
+  cv::Mat image;
+  int width, height;
+  cv::VideoCapture cap;
+  std::vector<cv::Mat> planes;
+  cv::Mat histatual, histanterior;
+  int nbins = 64;
+  float range[] = {0, 255};
+  const float *histrange = { range };
+  bool uniform = true;
+  bool acummulate = false;
+  int key;
+
+	cap.open("paisagem.mp4");
+  
+  if(!cap.isOpened()){
+    std::cout << "video indisponível";
+    return -1;
+  }
+  
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);  
+  width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+  height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+
+  std::cout << "largura = " << width << std::endl;
+  std::cout << "altura  = " << height << std::endl;
+
+  int histw = nbins, histh = nbins/2;
+  cv::Mat histImgR(histh, histw, CV_8UC3, cv::Scalar(0,0,0));
+
+    cap >> image;
+
+  /*o slit é usado para separar somente a cor de interesse do programa,
+  que no caso é vermelho*/
+  cv::split(image, planes);
+
+  /*calculando histograma da imagem considerando a cor vermelha*/
+  cv::calcHist(&planes[0], 1, 0, cv::Mat(), histatual, 1,
+           &nbins, &histrange,
+           uniform, acummulate);
+
+  /*normalizando histograma*/ 
+  cv::normalize(histatual, histatual, 0, histImgR.rows, cv::NORM_MINMAX, -1, cv::Mat());
+
+  while(1){
+    /*o histograma anterior recebe o atual*/
+    histatual.copyTo(histanterior);
+
+    cap >> image;
+
+    cv::split(image,planes);
+
+    cv::calcHist(&planes[0], 1, 0, cv::Mat(), histatual, 1, &nbins, &histrange, uniform, acummulate);
+    
+    cv::normalize(histatual, histatual, 0, histImgR.rows, cv::NORM_MINMAX, -1, cv::Mat());
+
+    histImgR.setTo(cv::Scalar(0));
+
+    double comp = cv::compareHist(histatual, histanterior, cv::HISTCMP_CORREL);
+    
+    /*definição do limiar que define o movimento*/
+    if(comp < 0.99){
+      std::cout<< "Movimento detectado\n";
+    }
+
+    for(int i=0; i<nbins; i++){
+        cv::line(histImgR,
+               cv::Point(i, histh),
+               cv::Point(i, histh-cvRound(histatual.at<float>(i))),
+               cv::Scalar(0, 0, 255), 1, 8, 0);
+    }
+
+    histImgR.copyTo(image(cv::Rect(0,0,nbins, histh)));
+    cv::imshow("Detector de movimento", image);
+    key = cv::waitKey(30);
+    if(key == 27) break;
+  }
+  return 0;
+}
+----
+Como resultado temos no terminal o aviso de movimento toda vez que há uma mudança significativa no vídeo.
+
+.Resultado do algoritmo de equalização
+//image::figuras/result.png[width=500,height=500]
 
 == 6 Filtragem no domínio espacial I
 === 6.1 Laplaciano do gaussiano de um vídeo
