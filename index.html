@@ -1131,6 +1131,12 @@ int main(int argc, char** argv){
 <div class="paragraph">
 <p>Como resultado temos no terminal o aviso de movimento toda vez que há uma mudança significativa no vídeo.</p>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/movimento.png" alt="movimento" width="500" height="500">
+</div>
+<div class="title">Figure 9. Resultado do algoritmo de detecção de movimento</div>
+</div>
 </div>
 </div>
 </div>
@@ -1140,7 +1146,6 @@ int main(int argc, char** argv){
 <div class="sect2">
 <h3 id="_6_1_laplaciano_do_gaussiano_de_um_vídeo">6.1 Laplaciano do gaussiano de um vídeo</h3>
 <div class="paragraph">
-<div class="title">Resultado do algoritmo de equalização</div>
 <p>Utilizando o programa <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/filtroespacial.cpp">filtroespacial.cpp</a> como referência, foi implementado o programa laplgauss.cpp.</p>
 </div>
 <div class="paragraph">
@@ -1170,7 +1175,7 @@ int main(int argc, char** argv){
 <div class="content">
 <img src="figuras/mascara.png" alt="mascara" width="200" height="200">
 </div>
-<div class="title">Figure 9. Máscara laplaciano do gaussiano</div>
+<div class="title">Figure 10. Máscara laplaciano do gaussiano</div>
 </div>
 <div class="paragraph">
 <p>Com essa máscara bastou apenas incluir no switch-case um caso em que para um dado comando ela fosse utilizada. Optou-se por escolher "x" como comando para acionar o filtro laplaciano do gaussiano. Abaixo há o algoritmo completo utilizado.</p>
@@ -1312,7 +1317,7 @@ int main(int, char **) {
 <div class="content">
 <img src="figuras/laplgauss.png" alt="laplgauss" width="500" height="500">
 </div>
-<div class="title">Figure 10. Frame do vídeo com filtro laplaciano do gaussiano</div>
+<div class="title">Figure 11. Frame do vídeo com filtro laplaciano do gaussiano</div>
 </div>
 <div class="paragraph">
 <p>Em contrapatirda ao utilizar apenas o filtro laplaciano o resultado é o mostrado abaixo.</p>
@@ -1321,7 +1326,7 @@ int main(int, char **) {
 <div class="content">
 <img src="figuras/lap.png" alt="lap" width="500" height="500">
 </div>
-<div class="title">Figure 11. Frame do vídeo com filtro laplaciano</div>
+<div class="title">Figure 12. Frame do vídeo com filtro laplaciano</div>
 </div>
 <div class="paragraph">
 <p>Dessa forma, observou-se que o filtro laplaciano do gaussiano destaca mais os contornos e evidencia maiores detalhes da imagem.</p>
@@ -1332,7 +1337,7 @@ int main(int, char **) {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-25 18:07:20 -0300
+Last updated 2023-09-25 18:17:49 -0300
 </div>
 </div>
 </body>
