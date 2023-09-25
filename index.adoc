@@ -201,8 +201,13 @@ image::figuras/trocarregioes.png[width=500,height=500]
 
 == 2 Serialização de dados em ponto flutuante via FileStorage
 
+=== Imagem YML e PNG
+FALTA
+
 == 3 Decomposição de imagens em planos de bits
 
+=== Esteganografia
+FALTA
 
 == 4 Preenchendo regiões
 === 4.1 Identificando bolhas com ou sem buracos
@@ -371,7 +376,11 @@ Bolhas que estavam na borda: 11
 ----
 
 == 5 Manipulação de histogramas
+=== 5.1 Equalizar imagem cinza
 
+
+=== 5.2 Detecção de Movimento
+FALTA 
 
 == 6 Filtragem no domínio espacial I
 === 6.1 Laplaciano do gaussiano de um vídeo
