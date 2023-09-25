@@ -3,6 +3,9 @@
 :url-peak1: https://docs.opencv.org/3.4/d2/d44/classcv_1_1Rect__.html
 :url-peak2: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/labeling.cpp
 :url-peak3: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/filtroespacial.cpp
+:url-peak4: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/histogram.cpp
+:url-peak5: https://docs.opencv.org/3.4/d8/d01/group__imgproc__color__conversions.html
+:url-peak6: https://docs.opencv.org/3.4/d4/d1b/tutorial_histogram_equalization.html
 :stem: latexmath
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
 graduanda em Engenharia Mecatrônica pela UFRN
@@ -201,12 +204,12 @@ image::figuras/trocarregioes.png[width=500,height=500]
 
 == 2 Serialização de dados em ponto flutuante via FileStorage
 
-=== Imagem YML e PNG
+=== 2.1 Imagem YML e PNG
 FALTA
 
 == 3 Decomposição de imagens em planos de bits
 
-=== Esteganografia
+=== 3.1 Esteganografia
 FALTA
 
 == 4 Preenchendo regiões
@@ -216,7 +219,7 @@ Aprimorando o algoritmo {url-peak2}[labeling.cpp], o objetivo agora é identific
 
 Abaixo temos o algoritmo completo que foi implementado.
 
-.Código 5: buracosebolhas.cpp
+.Código 6: buracosebolhas.cpp
 
 [source,cpp]
 ----
@@ -376,16 +379,107 @@ Bolhas que estavam na borda: 11
 ----
 
 == 5 Manipulação de histogramas
+
 === 5.1 Equalizar imagem cinza
+Utilizando o programa {url-peak4}[histogram.cpp] como referência, foi implementado o programa equalize.cpp. 
 
+Este programa irá realizar a equalização do histograma de cada imagem capturada antes de exibí-la. O teste foi feito utilizando o vídeo paisagem.mp4 que exibe diversos ambientes com iluminações variadas. 
 
-=== 5.2 Detecção de Movimento
+Primeiramente é preciso que as imagens processadas estejam em tons de cinza, para isso foi utilizada a função {url-peak5}[cvtColor] do Opencv. Feito isso, o histograma da imagem é equalizado com a função {url-peak6}[equalizeHist]. Com isso foi possível equalizar a imagem do vídeo utilizado.
+
+O algoritmo completo pode ser visualizado abaixo.
+
+.Código 7: equalize.cpp
+[source, cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv){
+  cv::Mat image, framequalizado;
+  int width, height;
+  cv::VideoCapture cap;
+  std::vector<cv::Mat> planes;
+  cv::Mat hist, historiginal;
+  int nbins = 64;
+  float range[] = {0, 255};
+  const float *histrange = { range };
+  bool uniform = true;
+  bool acummulate = false;
+  int key;
+
+	cap.open("paisagem.mp4");
+  
+  if(!cap.isOpened()){
+    std::cout << "video indisponível";
+    return -1;
+  }
+  
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);  
+  width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+  height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+
+  std::cout << "largura = " << width << std::endl;
+  std::cout << "altura  = " << height << std::endl;
+
+  int histw = nbins, histh = nbins/2;
+  cv::Mat hist1(histh, histw, CV_8UC1, cv::Scalar(0));
+  cv::Mat hist2(histh, histw, CV_8UC1, cv::Scalar(0));
+
+  while(1){
+    cap >> image;
+
+    /*converter frame colorido para cinza*/
+    cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
+
+    /*equalizar histograma com função do opencv*/
+    cv::equalizeHist(image, framequalizado);
+
+    /*Calcular o histograma das imagem original*/
+    cv::calcHist(&image, 1, 0, cv::Mat(), historiginal, 1, &nbins, &histrange, uniform, acummulate);
+    
+    /*Calcular o histograma das equalizada*/    
+    cv::calcHist(&framequalizado, 1, 0, cv::Mat(), hist, 1, &nbins, &histrange, uniform, acummulate);
+    
+    /*normalizar os histogramas*/
+    cv::normalize(historiginal, historiginal, 0, hist1.rows, cv::NORM_MINMAX, -1, cv::Mat());
+    cv::normalize(hist, hist, 0, hist2.rows, cv::NORM_MINMAX, -1, cv::Mat());
+
+    hist1.setTo(cv::Scalar(0));
+    hist2.setTo(cv::Scalar(0));
+    
+    for(int i=0; i<nbins; i++){
+        cv::line(hist1,
+               cv::Point(i, histh),
+               cv::Point(i, histh-cvRound(hist.at<float>(i))),
+               cv::Scalar(0, 0, 255), 1, 8, 0);
+        cv::line(hist2,
+               cv::Point(i, histh),
+               cv::Point(i, histh-cvRound(hist.at<float>(i))),
+               cv::Scalar(0, 0, 255), 1, 8, 0);
+    }
+    cv::imshow("Original", image);
+    cv::imshow("Equalizado", framequalizado);
+    key = cv::waitKey(30);
+    if(key == 27) break;
+  }
+  return 0;
+}
+----
+
+Como resultado foram obtidas imagens com maior nitidez e detalhes quando comparadas com a imagem original.
+
+.Resultado do algoritmo de equalização
+image::figuras/result.png[width=500,height=500]
+
+=== 5.2 Detecção de movimento
 FALTA 
 
 == 6 Filtragem no domínio espacial I
 === 6.1 Laplaciano do gaussiano de um vídeo
 
-Utilizando o programa {url-peak3}[filtroespacial.cpp] como referência, foi implementadod o programa laplgauss.cpp. 
+Utilizando o programa {url-peak3}[filtroespacial.cpp] como referência, foi implementado o programa laplgauss.cpp. 
 
 O programa acrescenta uma nova funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. 
 
@@ -411,7 +505,7 @@ image::figuras/mascara.png[width=200,height=200]
 
 Com essa máscara bastou apenas incluir no switch-case um caso em que para um dado comando ela fosse utilizada. Optou-se por escolher "x" como comando para acionar o filtro laplaciano do gaussiano. Abaixo há o algoritmo completo utilizado.
 
-.Código 7: laplgauss.cpp
+.Código 9: laplgauss.cpp
 [source,cpp]
 ----
 #include <iostream>
