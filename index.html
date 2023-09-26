@@ -707,7 +707,124 @@ int main (){
 <div class="sect2">
 <h3 id="_2_1_imagem_yml_e_png">2.1 Imagem YML e PNG</h3>
 <div class="paragraph">
-<p>FALTA</p>
+<p>Utilizando o programa <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/filestorage.cpp">filestorage.cpp</a> como base, foi criado um programa que gera uma imagem de dimensões 256x256 pixels contendo uma senóide de 4 períodos com amplitude de 127 desenhada na horizontal. Para isso, a variável global PERIODOS recebeu o valor 4.</p>
+</div>
+<div class="paragraph">
+<p>Definida a imagem, esta foi gravada no formato PNG e no formato YML. Em seguida foi extraída uma linha de cada imagem gravada para comparar os arquivos os valores do pixels gerados. Isso feito, foram criados dois arquivos txt para guardar os valores lidos de cada formato da imagem da senóide.</p>
+</div>
+<div class="paragraph">
+<p>O algoritmo desenvolvido pode ser visualizado abaixo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Código 4: senoide.cpp</div>
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+int SIDE = 256;
+int PERIODOS = 4;
+
+int main(int argc, char** argv) {
+    std::stringstream ss_img, ss_yml;
+    cv::Mat image;
+
+    ss_yml &lt;&lt; "senoide-" &lt;&lt; SIDE &lt;&lt; ".yml";
+    image = cv::Mat::zeros(SIDE, SIDE, CV_32FC1);
+
+    cv::FileStorage fs(ss_yml.str(), cv::FileStorage::WRITE);
+
+    for (int i = 0; i &lt; SIDE; i++) {
+      for (int j = 0; j &lt; SIDE; j++) {
+        image.at&lt;float&gt;(i, j) = 127 * sin(2 * M_PI * PERIODOS * j / SIDE) + 128;
+      }
+    }
+    /*arquivo txt da imagem yml, será coletada uma linha para comparação com png*/
+    std::ofstream Fileyml("img_yml.txt");
+
+    if (!Fileyml.is_open()){
+        std::cout &lt;&lt; "Erro ao criar o arquivo .txt" &lt;&lt; std::endl;
+        return -1;
+    }
+    for (int i = 0; i &lt; image.rows; i++)
+    {
+        float pixels = image.at&lt;float&gt;(i);
+        Fileyml &lt;&lt; pixels &lt;&lt; " ";
+    }
+    Fileyml.close();
+
+    fs &lt;&lt; "mat" &lt;&lt; image;
+    fs.release();
+
+    cv::normalize(image, image, 0, 255, cv::NORM_MINMAX);
+    image.convertTo(image, CV_8U);
+    ss_img &lt;&lt; "senoide-" &lt;&lt; SIDE &lt;&lt; ".png";
+    cv::imwrite(ss_img.str(), image);
+
+    fs.open(ss_yml.str(), cv::FileStorage::READ);
+    fs["mat"] &gt;&gt; image;
+
+    cv::normalize(image, image, 0, 255, cv::NORM_MINMAX);
+    image.convertTo(image, CV_8U);
+
+    /*arquivo txt da imagem png, será coletada uma linha para comparação com yml*/
+    std::ofstream Filepng("img_png.txt");
+
+    if (!Filepng.is_open()){
+            std::cout &lt;&lt; "Erro ao criar o arquivo .txt" &lt;&lt; std::endl;
+            return -1;
+        }
+        for (int i = 0; i &lt; image.rows; i++)
+        {
+            float pixels = image.at&lt;uchar&gt;(i);
+            Filepng &lt;&lt; pixels &lt;&lt; " ";
+
+        }
+        Filepng.close();
+
+    cv::imshow("image", image);
+    cv::waitKey();
+
+    return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Como resultado, foi gerada a seguinte imagem png da senóide.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/senoide-256.png" alt="senoide 256" width="250" height="250">
+</div>
+<div class="title">Figure 4. Senóide gerada pelo programa</div>
+</div>
+<div class="paragraph">
+<p>O arquivo txt de uma linha da imagem em .png pode visto abaixo.</p>
+</div>
+<div class="listingblock">
+<div class="title">img_png.txt</div>
+<div class="content">
+<pre>128 140 152 165 176 188 198 208 218 226 234 240 245 250 253 254 255 254 253 250 245 240 234 226 218 208 198 188 176 165 152 140 128 115 103 90 79 67 57 47 37 29 21 15 10 5 2 1 0 1 2 5 10 15 21 29 37 47 57 67 79 90 103 115 128 140 152 165 176 188 198 208 218 226 234 240 245 250 253 254 255 254 253 250 245 240 234 226 218 208 198 188 176 165 152 140 128 115 103 90 79 67 57 47 37 29 21 15 10 5 2 1 0 1 2 5 10 15 21 29 37 47 57 67 79 90 103 115 128 140 152 165 176 188 198 208 218 226 234 240 245 250 253 254 255 254 253 250 245 240 234 226 218 208 198 188 176 165 152 140 128 115 103 90 79 67 57 47 37 29 21 15 10 5 2 1 0 1 2 5 10 15 21 29 37 47 57 67 79 90 103 115 128 140 152 165 176 188 198 208 218 226 234 240 245 250 253 254 255 254 253 250 245 240 234 226 218 208 198 188 176 165 152 140 128 115 103 90 79 67 57 47 37 29 21 15 10 5 2 1 0 1 2 5 10 15 21 29 37 47 57 67 79 90 103 115</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Já arquivo txt de uma linha da imagem em .yml pode visto abaixo.</p>
+</div>
+<div class="listingblock">
+<div class="title">img_yml.txt</div>
+<div class="content">
+<pre>128 140.448 152.776 164.866 176.601 187.867 198.557 208.568 217.803 226.172 233.597 240.004 245.333 249.531 252.56 254.388 255 254.388 252.56 249.531 245.333 240.004 233.597 226.172 217.803 208.568 198.557 187.867 176.601 164.866 152.776 140.448 128 115.552 103.224 91.1338 79.3992 68.1326 57.4426 47.4321 38.1974 29.8277 22.4034 15.996 10.6673 6.46858 3.44027 1.61154 1 1.61154 3.44027 6.46858 10.6673 15.996 22.4034 29.8277 38.1974 47.4321 57.4426 68.1326 79.3992 91.1338 103.224 115.552 128 140.448 152.776 164.866 176.601 187.867 198.557 208.568 217.803 226.172 233.597 240.004 245.333 249.531 252.56 254.388 255 254.388 252.56 249.531 245.333 240.004 233.597 226.172 217.803 208.568 198.557 187.867 176.601 164.866 152.776 140.448 128 115.552 103.224 91.1338 79.3992 68.1326 57.4426 47.4321 38.1974 29.8277 22.4034 15.996 10.6673 6.46858 3.44027 1.61154 1 1.61154 3.44027 6.46858 10.6673 15.996 22.4034 29.8277 38.1974 47.4321 57.4426 68.1326 79.3992 91.1338 103.224 115.552 128 140.448 152.776 164.866 176.601 187.867 198.557 208.568 217.803 226.172 233.597 240.004 245.333 249.531 252.56 254.388 255 254.388 252.56 249.531 245.333 240.004 233.597 226.172 217.803 208.568 198.557 187.867 176.601 164.866 152.776 140.448 128 115.552 103.224 91.1338 79.3992 68.1326 57.4426 47.4321 38.1974 29.8277 22.4034 15.996 10.6673 6.46858 3.44027 1.61154 1 1.61154 3.44027 6.46858 10.6673 15.996 22.4034 29.8277 38.1974 47.4321 57.4426 68.1326 79.3992 91.1338 103.224 115.552 128 140.448 152.776 164.866 176.601 187.867 198.557 208.568 217.803 226.172 233.597 240.004 245.333 249.531 252.56 254.388 255 254.388 252.56 249.531 245.333 240.004 233.597 226.172 217.803 208.568 198.557 187.867 176.601 164.866 152.776 140.448 128 115.552 103.224 91.1338 79.3992 68.1326 57.4426 47.4321 38.1974 29.8277 22.4034 15.996 10.6673 6.46858 3.44027 1.61154 1 1.61154 3.44027 6.46858 10.6673 15.996 22.4034 29.8277 38.1974 47.4321 57.4426 68.1326 79.3992 91.1338 103.224 115.552</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ao comparar as duas linhas observou-se uma pequena diferença entre os valores obtidos. Como pode ser visto na Figura abaixo, a maior diferença entre os valores dos pixels foi de 1,.5</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/pngxyml.png" alt="pngxyml" width="400" height="400">
+</div>
+<div class="title">Figure 5. Comparação entre png e yml</div>
 </div>
 </div>
 </div>
@@ -870,7 +987,7 @@ int main(int argc, char** argv) {
 <div class="content">
 <img src="figuras/bolhas.png" alt="bolhas" width="300" height="300">
 </div>
-<div class="title">Figure 4. Imagem original bolhas.png</div>
+<div class="title">Figure 6. Imagem original bolhas.png</div>
 </div>
 <div class="paragraph">
 <p>Com a retirada das bolhas contidas na borda da imagem, é gerada a segunda imagem:</p>
@@ -879,7 +996,7 @@ int main(int argc, char** argv) {
 <div class="content">
 <img src="figuras/semborda.png" alt="semborda" width="300" height="300">
 </div>
-<div class="title">Figure 5. Imagem sem bolhas na borda</div>
+<div class="title">Figure 7. Imagem sem bolhas na borda</div>
 </div>
 <div class="paragraph">
 <p>Para identificar quais bolhas possuíam buracos, a cor do fundo foi mudada de preto para um tom de cinza. Isso foi feito para que somente os buracos ficassem na cor preta, assim a imagem foi varrida e foi possível identificar a quantidade de bolhas com buraco.</p>
@@ -888,7 +1005,7 @@ int main(int argc, char** argv) {
 <div class="content">
 <img src="figuras/buracos.png" alt="buracos" width="300" height="300">
 </div>
-<div class="title">Figure 6. Bolhas com buraco</div>
+<div class="title">Figure 8. Bolhas com buraco</div>
 </div>
 <div class="paragraph">
 <p>Em adição, os buracos foram removidos e a quantidade total de bolhas restantes foi contada. Além disso, o fundo voltou a ser preto permitindo que o labeling fosse  aplicado. A imagem final gerada pode ser vista abaixo:</p>
@@ -897,7 +1014,7 @@ int main(int argc, char** argv) {
 <div class="content">
 <img src="figuras/bolhaslab.png" alt="bolhaslab" width="300" height="300">
 </div>
-<div class="title">Figure 7. Resultado final do programa</div>
+<div class="title">Figure 9. Resultado final do programa</div>
 </div>
 <div class="paragraph">
 <p>No fim, o código exibe como resposta os seguintes dados:</p>
@@ -1019,7 +1136,7 @@ int main(int argc, char** argv){
 <div class="content">
 <img src="figuras/result.png" alt="result" width="500" height="500">
 </div>
-<div class="title">Figure 8. Resultado do algoritmo de equalização</div>
+<div class="title">Figure 10. Resultado do algoritmo de equalização</div>
 </div>
 </div>
 <div class="sect2">
@@ -1135,7 +1252,7 @@ int main(int argc, char** argv){
 <div class="content">
 <img src="figuras/movimento.png" alt="movimento" width="500" height="500">
 </div>
-<div class="title">Figure 9. Resultado do algoritmo de detecção de movimento</div>
+<div class="title">Figure 11. Resultado do algoritmo de detecção de movimento</div>
 </div>
 </div>
 </div>
@@ -1175,7 +1292,7 @@ int main(int argc, char** argv){
 <div class="content">
 <img src="figuras/mascara.png" alt="mascara" width="200" height="200">
 </div>
-<div class="title">Figure 10. Máscara laplaciano do gaussiano</div>
+<div class="title">Figure 12. Máscara laplaciano do gaussiano</div>
 </div>
 <div class="paragraph">
 <p>Com essa máscara bastou apenas incluir no switch-case um caso em que para um dado comando ela fosse utilizada. Optou-se por escolher "x" como comando para acionar o filtro laplaciano do gaussiano. Abaixo há o algoritmo completo utilizado.</p>
@@ -1317,7 +1434,7 @@ int main(int, char **) {
 <div class="content">
 <img src="figuras/laplgauss.png" alt="laplgauss" width="500" height="500">
 </div>
-<div class="title">Figure 11. Frame do vídeo com filtro laplaciano do gaussiano</div>
+<div class="title">Figure 13. Frame do vídeo com filtro laplaciano do gaussiano</div>
 </div>
 <div class="paragraph">
 <p>Em contrapatirda ao utilizar apenas o filtro laplaciano o resultado é o mostrado abaixo.</p>
@@ -1326,7 +1443,7 @@ int main(int, char **) {
 <div class="content">
 <img src="figuras/lap.png" alt="lap" width="500" height="500">
 </div>
-<div class="title">Figure 12. Frame do vídeo com filtro laplaciano</div>
+<div class="title">Figure 14. Frame do vídeo com filtro laplaciano</div>
 </div>
 <div class="paragraph">
 <p>Dessa forma, observou-se que o filtro laplaciano do gaussiano destaca mais os contornos e evidencia maiores detalhes da imagem.</p>
@@ -1337,7 +1454,7 @@ int main(int, char **) {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-25 18:17:49 -0300
+Last updated 2023-09-26 13:45:21 -0300
 </div>
 </div>
 </body>
