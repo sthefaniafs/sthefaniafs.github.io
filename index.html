@@ -795,7 +795,7 @@ int main(int argc, char** argv) {
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="figuras/senoide-256.png" alt="senoide 256" width="250" height="250">
+<img src="figuras/senoide-256.png" alt="senoide 256" width="300" height="300">
 </div>
 <div class="title">Figure 4. Senóide gerada pelo programa</div>
 </div>
@@ -822,7 +822,7 @@ int main(int argc, char** argv) {
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="figuras/pngxyml.png" alt="pngxyml" width="400" height="400">
+<img src="figuras/pngxyml.png" alt="pngxyml" width="600" height="600">
 </div>
 <div class="title">Figure 5. Comparação entre png e yml</div>
 </div>
@@ -835,7 +835,73 @@ int main(int argc, char** argv) {
 <div class="sect2">
 <h3 id="_3_1_esteganografia">3.1 Esteganografia</h3>
 <div class="paragraph">
-<p>FALTA</p>
+<p>Utilizando o programa <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/esteg-encode.cpp">esteg-encode.cpp</a> como referência para esteganografia, foi feito um programa que recupere uma imagem codificada de uma imagem resultante de esteganografia.</p>
+</div>
+<div class="paragraph">
+<p>Para isso, os bits da imagem portadora foram alterados de forma que os menos significativos dos pixels da imagem fornecida irão compor os bits mais significativos dos pixels da imagem recuperada.</p>
+</div>
+<div class="paragraph">
+<p>O algoritmo desenvolvido pode ser visualizado abaixo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Código 5: decodificaimg.cpp</div>
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char**argv) {
+  cv::Mat imagemPortadora, imagemFinal;
+  cv::Vec3b valPortadora;
+  int nbits = 3;
+
+  imagemPortadora = cv::imread(argv[1], cv::IMREAD_COLOR);
+
+  if (imagemPortadora.empty()) {
+    std::cout &lt;&lt; "imagem nao carregou corretamente" &lt;&lt; std::endl;
+    return (-1);
+  }
+
+  imagemFinal = imagemPortadora.clone();
+
+  for (int i = 0; i &lt; imagemPortadora.rows; i++) {
+    for (int j = 0; j &lt; imagemPortadora.cols; j++) {
+      valPortadora = imagemPortadora.at&lt;cv::Vec3b&gt;(i, j);
+
+    /*os bits menos significativos dos pixels da imagem fornecida irão compor
+    os bits mais significativos dos pixels da imagem recuperada*/
+      valPortadora[0] = valPortadora[0] &lt;&lt; (8-nbits);
+      valPortadora[1] = valPortadora[1] &lt;&lt; (8-nbits);
+      valPortadora[2] = valPortadora[2] &lt;&lt; (8-nbits);
+
+      imagemFinal.at&lt;cv::Vec3b&gt;(i, j) = valPortadora;
+    }
+  }
+
+  cv::imshow("Original", imagemPortadora);
+  cv::waitKey();
+  cv::imshow("Decodificada", imagemFinal);
+  cv::waitKey();
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A implementação foi testada com a imagem mostrada Figura abaixo.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/desafio-esteganografia.png" alt="desafio esteganografia" width="300" height="300">
+</div>
+<div class="title">Figure 6. Imagem codificada</div>
+</div>
+<div class="paragraph">
+<p>Ao realizar a decodificação por meio deslocamento do pixels menos significativos da imagem original para o mais significativos da imagem final, foi obtido o resultado abaixo.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/decodifica.png" alt="decodifica" width="700" height="700">
+</div>
+<div class="title">Figure 7. Imagem decodificada</div>
 </div>
 </div>
 </div>
@@ -987,7 +1053,7 @@ int main(int argc, char** argv) {
 <div class="content">
 <img src="figuras/bolhas.png" alt="bolhas" width="300" height="300">
 </div>
-<div class="title">Figure 6. Imagem original bolhas.png</div>
+<div class="title">Figure 8. Imagem original bolhas.png</div>
 </div>
 <div class="paragraph">
 <p>Com a retirada das bolhas contidas na borda da imagem, é gerada a segunda imagem:</p>
@@ -996,7 +1062,7 @@ int main(int argc, char** argv) {
 <div class="content">
 <img src="figuras/semborda.png" alt="semborda" width="300" height="300">
 </div>
-<div class="title">Figure 7. Imagem sem bolhas na borda</div>
+<div class="title">Figure 9. Imagem sem bolhas na borda</div>
 </div>
 <div class="paragraph">
 <p>Para identificar quais bolhas possuíam buracos, a cor do fundo foi mudada de preto para um tom de cinza. Isso foi feito para que somente os buracos ficassem na cor preta, assim a imagem foi varrida e foi possível identificar a quantidade de bolhas com buraco.</p>
@@ -1005,7 +1071,7 @@ int main(int argc, char** argv) {
 <div class="content">
 <img src="figuras/buracos.png" alt="buracos" width="300" height="300">
 </div>
-<div class="title">Figure 8. Bolhas com buraco</div>
+<div class="title">Figure 10. Bolhas com buraco</div>
 </div>
 <div class="paragraph">
 <p>Em adição, os buracos foram removidos e a quantidade total de bolhas restantes foi contada. Além disso, o fundo voltou a ser preto permitindo que o labeling fosse  aplicado. A imagem final gerada pode ser vista abaixo:</p>
@@ -1014,7 +1080,7 @@ int main(int argc, char** argv) {
 <div class="content">
 <img src="figuras/bolhaslab.png" alt="bolhaslab" width="300" height="300">
 </div>
-<div class="title">Figure 9. Resultado final do programa</div>
+<div class="title">Figure 11. Resultado final do programa</div>
 </div>
 <div class="paragraph">
 <p>No fim, o código exibe como resposta os seguintes dados:</p>
@@ -1134,9 +1200,9 @@ int main(int argc, char** argv){
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="figuras/result.png" alt="result" width="500" height="500">
+<img src="figuras/result.png" alt="result" width="700" height="700">
 </div>
-<div class="title">Figure 10. Resultado do algoritmo de equalização</div>
+<div class="title">Figure 12. Resultado do algoritmo de equalização</div>
 </div>
 </div>
 <div class="sect2">
@@ -1250,9 +1316,9 @@ int main(int argc, char** argv){
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="figuras/movimento.png" alt="movimento" width="500" height="500">
+<img src="figuras/movimento.png" alt="movimento" width="700" height="700">
 </div>
-<div class="title">Figure 11. Resultado do algoritmo de detecção de movimento</div>
+<div class="title">Figure 13. Resultado do algoritmo de detecção de movimento</div>
 </div>
 </div>
 </div>
@@ -1292,7 +1358,7 @@ int main(int argc, char** argv){
 <div class="content">
 <img src="figuras/mascara.png" alt="mascara" width="200" height="200">
 </div>
-<div class="title">Figure 12. Máscara laplaciano do gaussiano</div>
+<div class="title">Figure 14. Máscara laplaciano do gaussiano</div>
 </div>
 <div class="paragraph">
 <p>Com essa máscara bastou apenas incluir no switch-case um caso em que para um dado comando ela fosse utilizada. Optou-se por escolher "x" como comando para acionar o filtro laplaciano do gaussiano. Abaixo há o algoritmo completo utilizado.</p>
@@ -1432,18 +1498,18 @@ int main(int, char **) {
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="figuras/laplgauss.png" alt="laplgauss" width="500" height="500">
+<img src="figuras/laplgauss.png" alt="laplgauss" width="700" height="700">
 </div>
-<div class="title">Figure 13. Frame do vídeo com filtro laplaciano do gaussiano</div>
+<div class="title">Figure 15. Frame do vídeo com filtro laplaciano do gaussiano</div>
 </div>
 <div class="paragraph">
 <p>Em contrapatirda ao utilizar apenas o filtro laplaciano o resultado é o mostrado abaixo.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="figuras/lap.png" alt="lap" width="500" height="500">
+<img src="figuras/lap.png" alt="lap" width="700" height="700">
 </div>
-<div class="title">Figure 14. Frame do vídeo com filtro laplaciano</div>
+<div class="title">Figure 16. Frame do vídeo com filtro laplaciano</div>
 </div>
 <div class="paragraph">
 <p>Dessa forma, observou-se que o filtro laplaciano do gaussiano destaca mais os contornos e evidencia maiores detalhes da imagem.</p>
@@ -1454,7 +1520,7 @@ int main(int, char **) {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-26 13:45:21 -0300
+Last updated 2023-09-26 15:14:12 -0300
 </div>
 </div>
 </body>

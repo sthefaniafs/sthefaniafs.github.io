@@ -9,6 +9,7 @@
 :url-peak7: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/histogram.cpp
 :url-peak8: https://docs.opencv.org/2.4/modules/imgproc/doc/histograms.html?comparehist#comparehist
 :url-peak9: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/filestorage.cpp
+:url-peak10: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/esteg-encode.cpp
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
 graduanda em Engenharia Mecatrônica pela UFRN
 :toc: left
@@ -292,7 +293,7 @@ int main(int argc, char** argv) {
 Como resultado, foi gerada a seguinte imagem png da senóide.
 
 .Senóide gerada pelo programa
-image::figuras/senoide-256.png[width=250,height=250]
+image::figuras/senoide-256.png[width=300,height=300]
 
 O arquivo txt de uma linha da imagem em .png pode visto abaixo.
 
@@ -311,12 +312,69 @@ Já arquivo txt de uma linha da imagem em .yml pode visto abaixo.
 Ao comparar as duas linhas observou-se uma pequena diferença entre os valores obtidos. Como pode ser visto na Figura abaixo, a maior diferença entre os valores dos pixels foi de 1,.5
 
 .Comparação entre png e yml
-image::figuras/pngxyml.png[width=400,height=400]
+image::figuras/pngxyml.png[width=600,height=600]
 
 == 3 Decomposição de imagens em planos de bits
 
 === 3.1 Esteganografia
-FALTA
+
+Utilizando o programa {url-peak10}[esteg-encode.cpp] como referência para esteganografia, foi feito um programa que recupere uma imagem codificada de uma imagem resultante de esteganografia. 
+
+Para isso, os bits da imagem portadora foram alterados de forma que os menos significativos dos pixels da imagem fornecida irão compor os bits mais significativos dos pixels da imagem recuperada.
+
+O algoritmo desenvolvido pode ser visualizado abaixo:
+
+.Código 5: decodificaimg.cpp
+[source, cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char**argv) {
+  cv::Mat imagemPortadora, imagemFinal;
+  cv::Vec3b valPortadora;
+  int nbits = 3;
+
+  imagemPortadora = cv::imread(argv[1], cv::IMREAD_COLOR);
+
+  if (imagemPortadora.empty()) {
+    std::cout << "imagem nao carregou corretamente" << std::endl;
+    return (-1);
+  }
+
+  imagemFinal = imagemPortadora.clone();
+
+  for (int i = 0; i < imagemPortadora.rows; i++) {
+    for (int j = 0; j < imagemPortadora.cols; j++) {
+      valPortadora = imagemPortadora.at<cv::Vec3b>(i, j);
+
+    /*os bits menos significativos dos pixels da imagem fornecida irão compor 
+    os bits mais significativos dos pixels da imagem recuperada*/
+      valPortadora[0] = valPortadora[0] << (8-nbits);
+      valPortadora[1] = valPortadora[1] << (8-nbits);
+      valPortadora[2] = valPortadora[2] << (8-nbits);
+
+      imagemFinal.at<cv::Vec3b>(i, j) = valPortadora;
+    }
+  }
+ 
+  cv::imshow("Original", imagemPortadora);
+  cv::waitKey();
+  cv::imshow("Decodificada", imagemFinal);
+  cv::waitKey();
+  return 0;
+}
+----
+
+A implementação foi testada com a imagem mostrada Figura abaixo.
+
+.Imagem codificada 
+image::figuras/desafio-esteganografia.png[width=300,height=300]
+
+Ao realizar a decodificação por meio deslocamento do pixels menos significativos da imagem original para o mais significativos da imagem final, foi obtido o resultado abaixo.
+
+.Imagem decodificada 
+image::figuras/decodifica.png[width=700,height=700]
 
 == 4 Preenchendo regiões
 === 4.1 Identificando bolhas com ou sem buracos
@@ -581,7 +639,7 @@ int main(int argc, char** argv){
 Como resultado foram obtidas imagens com maior nitidez e detalhes quando comparadas com a imagem original. Além disso, o histograma de ambas as imagens são mostrados no canto da janela, o intuito é ilustrar a diferença causada pelo processamento da imagem.
 
 .Resultado do algoritmo de equalização
-image::figuras/result.png[width=500,height=500]
+image::figuras/result.png[width=700,height=700]
 
 === 5.2 Detecção de movimento
 
@@ -686,7 +744,7 @@ int main(int argc, char** argv){
 Como resultado temos no terminal o aviso de movimento toda vez que há uma mudança significativa no vídeo.
 
 .Resultado do algoritmo de detecção de movimento
-image::figuras/movimento.png[width=500,height=500]
+image::figuras/movimento.png[width=700,height=700]
 
 == 6 Filtragem no domínio espacial I
 === 6.1 Laplaciano do gaussiano de um vídeo
@@ -850,12 +908,12 @@ int main(int, char **) {
 Para testar o algortimo foi utilizado um vídeo (paisagem.mp4). Ao pressionar o comando de adicionar o filtro laplaciano do gaussiano temos como resultado o frame abaixo.
 
 .Frame do vídeo com filtro laplaciano do gaussiano
-image::figuras/laplgauss.png[width=500,height=500]
+image::figuras/laplgauss.png[width=700,height=700]
 
 Em contrapatirda ao utilizar apenas o filtro laplaciano o resultado é o mostrado abaixo.
 
 .Frame do vídeo com filtro laplaciano
-image::figuras/lap.png[width=500,height=500]
+image::figuras/lap.png[width=700,height=700]
 
 Dessa forma, observou-se que o filtro laplaciano do gaussiano destaca mais os contornos e evidencia maiores detalhes da imagem.
 
