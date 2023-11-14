@@ -481,6 +481,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_6_1_laplaciano_do_gaussiano_de_um_vídeo">6.1 Laplaciano do gaussiano de um vídeo</a></li>
 </ul>
 </li>
+<li><a href="#_9_segmentação_de_imagens">9 Segmentação de imagens</a>
+<ul class="sectlevel2">
+<li><a href="#_9_1_pontilhismo_com_algoritmo_de_canny">9.1 Pontilhismo com algoritmo de Canny</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1517,10 +1522,195 @@ int main(int, char **) {
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_9_segmentação_de_imagens">9 Segmentação de imagens</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_9_1_pontilhismo_com_algoritmo_de_canny">9.1 Pontilhismo com algoritmo de Canny</h3>
+<div class="paragraph">
+<p>Utilizando os programas <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/esteg-encode.cpp">canny.cpp</a> e <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/canny.cpp">pontilhismo.cpp</a> como referência, foi implementado o programa cannypoints.cpp.</p>
+</div>
+<div class="paragraph">
+<p>A ideia aqui é usar as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. Assim, foi feita uma alteração no laço de repetição do algoritmo de pontilhismo para que fossem consideradas as bordas detectadas pelo algoritmo de Canny.</p>
+</div>
+<div class="paragraph">
+<p>Na posição dos pixels de borda, encontrados pelo algoritmo de Canny, o usuário poderá definir o raio dos pontos para gerar a imagem pontilhista. Esse raio será definido por uma trackbar, que é uma barra deslizante que permite escolher um valor para o raio indo de 0 a 10.</p>
+</div>
+<div class="paragraph">
+<p>Nos demais pixels da imagem um raio fixo de tamanho 3 será aplicado.</p>
+</div>
+<div class="paragraph">
+<p>O algoritmo completo pode ser visualizado abaixo.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código 10: cannypoints.cpp</div>
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;algorithm&gt;
+#include &lt;cstdlib&gt;
+#include &lt;ctime&gt;
+#include &lt;fstream&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+#include &lt;vector&gt;
+
+int STEP = 5;
+int JITTER = 3;
+int RAIO = 3;
+int top_slider = 10;
+int top_slider_max = 200;
+
+char TrackbarName[50];
+
+cv::Mat image, border, points;
+
+void pointillism (){
+
+    std::vector&lt;int&gt; yrange;
+    std::vector&lt;int&gt; xrange;
+    cv::Vec3b color;
+
+    int width, height;
+    int x, y;
+
+    width = image.cols;
+    height = image.rows;
+
+    xrange.resize(height / STEP);
+    yrange.resize(width / STEP);
+
+    std::iota(xrange.begin(), xrange.end(), 0);
+    std::iota(yrange.begin(), yrange.end(), 0);
+
+    for (uint i = 0; i &lt; xrange.size(); i++) {
+        xrange[i] = xrange[i] * STEP + STEP / 2;
+    }
+
+    for (uint i = 0; i &lt; yrange.size(); i++) {
+        yrange[i] = yrange[i] * STEP + STEP / 2;
+    }
+
+    points = cv::Mat(height, width, CV_8UC3, cv::Scalar(255, 255, 255)); // Imagem colorida
+
+    std::random_shuffle(xrange.begin(), xrange.end());
+
+    for (auto i : xrange) {
+
+        std::random_shuffle(yrange.begin(), yrange.end());
+        for (auto j : yrange) {
+
+            if (border.at&lt;uchar&gt;(i, j) == 255){
+                x = i+ std::rand()%(2*JITTER)-JITTER+1;
+                y = j+ std::rand()%(2*JITTER)-JITTER+1;
+                color = image.at&lt;cv::Vec3b&gt;(x,y);
+                circle(points, cv::Point(y, x), RAIO, cv::Scalar(color[0], color[1], color[2]),
+                cv::FILLED, cv::LINE_AA);
+            }
+            else{
+                x = i+ std::rand()%(2*JITTER)-JITTER+1;
+                y = j+ std::rand()%(2*JITTER)-JITTER+1;
+                color = image.at&lt;cv::Vec3b&gt;(x,y);
+                circle(points, cv::Point(y, x), 3, cv::Scalar(color[0], color[1], color[2]),
+                cv::FILLED, cv::LINE_AA);
+            }
+        }
+    }
+
+}
+
+void on_trackbar_canny(int, void*){
+    cv::Canny(image, border, top_slider, 3*top_slider);
+    cv::imshow("Canny", border);
+}
+
+void on_trackbar_canny_points(int,void*){
+    pointillism();
+    cv::imshow("Pontilhismo", points);
+
+}
+
+int main(int argc, char** argv) {
+
+    image = cv::imread(argv[1],cv::IMREAD_COLOR);
+    //int resize_scaling = 50;
+    //float newWidth = image.size().width * resize_scaling/100;
+    //float newHeight = image.size().height * resize_scaling/100;
+
+    //cv::resize(image, image, cv::Size(newWidth, newHeight), cv::INTER_LINEAR);
+
+    std::srand(std::time(0));
+
+    if (image.empty()) {
+        std::cout &lt;&lt; "Could not open or find the image" &lt;&lt; std::endl;
+        return -1;
+    }
+
+
+    sprintf( TrackbarName, "Threshold inferior", top_slider_max );
+
+    cv::namedWindow("Canny", 1);
+
+    cv::createTrackbar(TrackbarName, "Canny",
+                    &amp;top_slider,
+                    top_slider_max,
+                    on_trackbar_canny );
+
+    on_trackbar_canny(top_slider, 0);
+
+    // Pontilhismo
+    sprintf(TrackbarName, "Raio");
+
+    cv::namedWindow("Pontilhismo", 1);
+    cv::createTrackbar(TrackbarName, "Pontilhismo",
+                       &amp;RAIO,
+                       10,
+                       on_trackbar_canny_points);
+    on_trackbar_canny_points(RAIO, 0);
+
+    cv::waitKey();
+    //cv::imwrite("borda.png", border);
+    //cv::imwrite("pointilhismo.png", points);
+
+    return 1;
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Para testar o algortimo foi utilizado a imagem abaixo.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/mids.jpg" alt="mids" width="600" height="600">
+</div>
+<div class="title">Figure 17. Imagem retirada do filme Midsommar (2019)</div>
+</div>
+<div class="paragraph">
+<p>Observe que quando o programa é executado, nas regiões da imagem em que não há bordas temos circulos pequeno (raio=3) e nas regiões com borda foi especificado que os círculos devem ter um raio de 5.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/resultado.png" alt="resultado" width="600" height="600">
+</div>
+<div class="title">Figure 18. Resultado do programa com raio 5</div>
+</div>
+<div class="paragraph">
+<p>Aumentei o limiar no algoritmo de Canny para tornar mais visíveis os contornos nas flores. Além disso, aumentei o raio dos círculos para 8. Dessa forma, a distinção entre os pontos que não estão na borda de Canny (com raio 3) e aqueles na borda torna-se mais evidente.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="figuras/result_flowers.png" alt="result flowers" width="600" height="600">
+</div>
+<div class="title">Figure 19. Resultado do programa com raio 8</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-26 15:14:12 -0300
+Last updated 2023-11-14 16:17:07 -0300
 </div>
 </div>
 </body>
