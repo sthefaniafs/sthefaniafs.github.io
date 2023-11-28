@@ -481,7 +481,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_6_1_laplaciano_do_gaussiano_de_um_vídeo">6.1 Laplaciano do gaussiano de um vídeo</a></li>
 </ul>
 </li>
-<li><a href="#_7_filtragem_no_domínio_espacial_ii">7 Filtragem no domínio espacial II</a>
+<li><a href="#_7_filtragem_no_domínio_da_frequência">7 Filtragem no domínio da frequência</a>
 <ul class="sectlevel2">
 <li><a href="#_7_1_a_transformada_de_fourier">7.1 A Transformada de Fourier</a></li>
 <li><a href="#_7_2_filtro_homomórfico">7.2 Filtro homomórfico</a></li>
@@ -492,6 +492,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_8_1_pontilhismo_com_algoritmo_de_canny">8.1 Pontilhismo com algoritmo de Canny</a></li>
 </ul>
 </li>
+<li><a href="#_9_quantização_vetorial_com_k_means">9 Quantização vetorial com k-means</a></li>
 </ul>
 </div>
 </div>
@@ -1529,7 +1530,7 @@ int main(int, char **) {
 </div>
 </div>
 <div class="sect1">
-<h2 id="_7_filtragem_no_domínio_espacial_ii">7 Filtragem no domínio espacial II</h2>
+<h2 id="_7_filtragem_no_domínio_da_frequência">7 Filtragem no domínio da frequência</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_7_1_a_transformada_de_fourier">7.1 A Transformada de Fourier</h3>
@@ -1652,16 +1653,17 @@ int main(int argc, char** argv) {
 <div class="title">Figure 18. Resultado do algortimo dftimage.cpp</div>
 </div>
 <div class="paragraph">
-<p>Sabemos que o valor teórico da Transformda de Fourier do seno é:</p>
+<p>Na figura resultante, a transformada de Fourier em duas dimensões é representada visualmente como a imagem, onde cada pixel na imagem da transformada de Fourier (TF) representa um valor de frequência espacial. A magnitude desse valor é codificada pela intensidade luminosa do pixel.</p>
 </div>
 <div class="paragraph">
-<p>Ao comparar com o valor teórico de</p>
+<p>A luminosidade dos picos na imagem da TF reflete o contraste na imagem no domínio espacial. Assim, quanto mais brilhantes os picos na imagem da TF, maior o contraste na
+imagem no espaço.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_7_2_filtro_homomórfico">7.2 Filtro homomórfico</h3>
 <div class="paragraph">
-<p>Utilizando o programa [dftfilter.cpp] como referência, foi implementado o filtro homomórfico para melhorar uma imagem, fornecida é em tons de cinza, com iluminação irregular.</p>
+<p>Utilizando o programa <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/dftfilter.cpp">dftfilter.cpp</a> como referência, foi implementado o filtro homomórfico para melhorar uma imagem, fornecida é em tons de cinza, com iluminação irregular.</p>
 </div>
 <div class="paragraph">
 <p>Primeiramente é preciso entender que o Filtro Homomórfico atenua as baixas-frequências e realça as altas baseando-se no modelo de iluminação-refletância.</p>
@@ -1806,14 +1808,14 @@ int main(int argc, char** argv) {
 </div>
 </div>
 <div class="paragraph">
-<p>O algoritmo original, dftfilter.cpp, sofreu alteração somente na função "filter", que foi alterada a equação anterior para receber a equação do filtro homomórfico.</p>
+<p>O código original do algoritmo, disponível em <a href="https://agostinhobritojr.github.io/tutorial/pdi/exemplos/dftfilter.cpp">dftfilter.cpp</a>, passou por modificações apenas na função "filter". Nessa função, a equação anterior foi substituída pela fórmula do filtro homomórfico.</p>
 </div>
 <div class="paragraph">
-<p>Para testar o algortimo foi utilizada a imagem abaixo. Nela há uma iluminação focada na mulher, enquanto o restante do cenário recebe pouca iluminação.</p>
+<p>A imagem utilizada para testes é apresentada abaixo, que possui uma iluminação mais intensa em torno da mulher, enquanto que o restante do cenário recebe pouca iluminação.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="figuras/img.png" alt="img" width="400" height="400">
+<img src="figuras/img.png" alt="img" width="500" height="500">
 </div>
 <div class="title">Figure 19. Imagem com iluminação focada na mulher</div>
 </div>
@@ -1822,7 +1824,7 @@ int main(int argc, char** argv) {
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="figuras/dft-filter.png" alt="dft filter" width="400" height="400">
+<img src="figuras/dft-filter.png" alt="dft filter" width="500" height="500">
 </div>
 <div class="title">Figure 20. Imagem com iluminação focada na mulher</div>
 </div>
@@ -1850,7 +1852,7 @@ int main(int argc, char** argv) {
 <p>O algoritmo completo pode ser visualizado abaixo.</p>
 </div>
 <div class="listingblock">
-<div class="title">Código xx: cannypoints.cpp</div>
+<div class="title">Código 12: cannypoints.cpp</div>
 <div class="content">
 <pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;algorithm&gt;
 #include &lt;cstdlib&gt;
@@ -2014,10 +2016,16 @@ int main(int argc, char** argv) {
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_9_quantização_vetorial_com_k_means">9 Quantização vetorial com k-means</h2>
+<div class="sectionbody">
+
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-11-28 14:39:29 -0300
+Last updated 2023-11-28 15:41:20 -0300
 </div>
 </div>
 <script type="text/x-mathjax-config">

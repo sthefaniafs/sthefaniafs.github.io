@@ -13,7 +13,7 @@
 :url-peak11: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/canny.cpp
 :url-peak12: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/canny.cpp
 :url-peak13: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/dftimage.cpp
-:url-peak14: 
+:url-peak14: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/dftfilter.cpp
 :stem: latexmath
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
 graduanda em Engenharia Mecatrônica pela UFRN
@@ -922,7 +922,7 @@ image::figuras/lap.png[width=700,height=700]
 
 Dessa forma, observou-se que o filtro laplaciano do gaussiano destaca mais os contornos e evidencia maiores detalhes da imagem.
 
-== 7 Filtragem no domínio espacial II
+== 7 Filtragem no domínio da frequência
 === 7.1 A Transformada de Fourier
 Utilizando os programa {url-peak13}[dftimage.cpp], foi calculado o espectro de magnitude da imagem abaixo.
 
@@ -1033,15 +1033,14 @@ Como resultado foi obtido o espectro de magnitude mostrado abaixo.
 .Resultado do algortimo dftimage.cpp
 image::figuras/magnitude.png[width=250,height=250]
 
-Sabemos que o valor teórico da Transformda de Fourier do seno é:
+Na figura resultante, a transformada de Fourier em duas dimensões é representada visualmente como a imagem, onde cada pixel na imagem da transformada de Fourier (TF) representa um valor de frequência espacial. A magnitude desse valor é codificada pela intensidade luminosa do pixel.
 
-
-Ao comparar com o valor teórico de
-
+A luminosidade dos picos na imagem da TF reflete o contraste na imagem no domínio espacial. Assim, quanto mais brilhantes os picos na imagem da TF, maior o contraste na
+imagem no espaço.
 
 === 7.2 Filtro homomórfico
 
-Utilizando o programa [dftfilter.cpp] como referência, foi implementado o filtro homomórfico para melhorar uma imagem, fornecida é em tons de cinza, com iluminação irregular. 
+Utilizando o programa {url-peak14}[dftfilter.cpp] como referência, foi implementado o filtro homomórfico para melhorar uma imagem, fornecida é em tons de cinza, com iluminação irregular. 
 
 Primeiramente é preciso entender que o Filtro Homomórfico atenua as baixas-frequências e realça as altas baseando-se no modelo de iluminação-refletância.
 
@@ -1179,19 +1178,18 @@ int main(int argc, char** argv) {
   return EXIT_SUCCESS;
 }
 ----
+O código original do algoritmo, disponível em {url-peak14}[dftfilter.cpp], passou por modificações apenas na função "filter". Nessa função, a equação anterior foi substituída pela fórmula do filtro homomórfico.
 
-O algoritmo original, dftfilter.cpp, sofreu alteração somente na função "filter", que foi alterada a equação anterior para receber a equação do filtro homomórfico.
-
-Para testar o algortimo foi utilizada a imagem abaixo. Nela há uma iluminação focada na mulher, enquanto o restante do cenário recebe pouca iluminação.
+A imagem utilizada para testes é apresentada abaixo, que possui uma iluminação mais intensa em torno da mulher, enquanto que o restante do cenário recebe pouca iluminação.
 
 .Imagem com iluminação focada na mulher
-image::figuras/img.png[width=400,height=400]
+image::figuras/img.png[width=500,height=500]
 
 Os valores de γL e γH foram ajustados para melhorar a distribuição da luz na imagem, resultando no que vemos na imagem apresentada abaixo. Observa-se uma distribuição mais uniforme da luminosidade em toda a imagem, indicando que houve uma melhoria no balanceamento da iluminação.
 
 
 .Imagem com iluminação focada na mulher
-image::figuras/dft-filter.png[width=400,height=400]
+image::figuras/dft-filter.png[width=500,height=500]
 
 == 8 Segmentação de imagens
 === 8.1 Pontilhismo com algoritmo de Canny 
@@ -1206,7 +1204,7 @@ Nos demais pixels da imagem um raio fixo de tamanho 3 será aplicado.
 
 O algoritmo completo pode ser visualizado abaixo.
 
-.Código xx: cannypoints.cpp
+.Código 12: cannypoints.cpp
 [source,cpp]
 ----
 #include <algorithm>
@@ -1356,3 +1354,4 @@ Aumentei o limiar no algoritmo de Canny para tornar mais visíveis os contornos 
 .Resultado do programa com raio 8
 image::figuras/result_flowers.png[width=600,height=600]
 
+== 9 Quantização vetorial com k-means
