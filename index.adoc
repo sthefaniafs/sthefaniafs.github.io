@@ -12,6 +12,9 @@
 :url-peak10: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/esteg-encode.cpp
 :url-peak11: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/canny.cpp
 :url-peak12: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/canny.cpp
+:url-peak13: https://agostinhobritojr.github.io/tutorial/pdi/exemplos/dftimage.cpp
+:url-peak14: 
+:stem: latexmath
 Por Sthefania Fernandes <sthefaniafernandes03@gmail.com> 
 graduanda em Engenharia Mecatrônica pela UFRN
 :toc: left
@@ -755,7 +758,7 @@ Utilizando o programa {url-peak3}[filtroespacial.cpp] como referência, foi impl
 
 O programa acrescenta uma nova funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. 
 
-Assim, primeiramente foi feita a máscara laplaciana do gaussiano que é obtida através de uma operação de convulução:
+Assim, primeiramente foi feita a máscara laplaciana do gaussiano que é obtida através de uma operação de convolução:
 
 [asciimath]
 ++++
@@ -766,7 +769,7 @@ Onde, f(x, y) é uma imagem suavizada por uma ffunção Gaussiana. Assim, com as
 
 [asciimath]
 ++++
-∇^2G (x, y ) = − 1/(2πσ^4)(1 − (x^2 + y^2)/σ^2) exp
+∇^2G (x, y ) = − 1/(2πσ^4)(1 − (x^2 + y^2)/σ^2) e^
 (− (x^2 + y^2)/ (2σ^2))
 ++++
 
@@ -919,8 +922,279 @@ image::figuras/lap.png[width=700,height=700]
 
 Dessa forma, observou-se que o filtro laplaciano do gaussiano destaca mais os contornos e evidencia maiores detalhes da imagem.
 
-== 9 Segmentação de imagens
-=== 9.1 Pontilhismo com algoritmo de Canny 
+== 7 Filtragem no domínio espacial II
+=== 7.1 A Transformada de Fourier
+Utilizando os programa {url-peak13}[dftimage.cpp], foi calculado o espectro de magnitude da imagem abaixo.
+
+.Imagem da senoide gerada pelo programa filestorage.cpp
+image::figuras/senoide-256.png[width=250,height=250]
+
+O algoritmo completo pode ser visualizado abaixo.
+
+.Código 10: dftimage.cpp
+[source,cpp]
+----
+#include <iostream>
+#include <vector>
+#include <opencv2/opencv.hpp>
+
+void swapQuadrants(cv::Mat& image) {
+  cv::Mat tmp, A, B, C, D;
+
+  // se a imagem tiver tamanho impar, recorta a regiao para o maior
+  // tamanho par possivel (-2 = 1111...1110)
+  image = image(cv::Rect(0, 0, image.cols & -2, image.rows & -2));
+
+  int centerX = image.cols / 2;
+  int centerY = image.rows / 2;
+
+  // rearranja os quadrantes da transformada de Fourier de forma que 
+  // a origem fique no centro da imagem
+  // A B   ->  D C
+  // C D       B A
+  A = image(cv::Rect(0, 0, centerX, centerY));
+  B = image(cv::Rect(centerX, 0, centerX, centerY));
+  C = image(cv::Rect(0, centerY, centerX, centerY));
+  D = image(cv::Rect(centerX, centerY, centerX, centerY));
+
+  // swap quadrants (Top-Left with Bottom-Right)
+  A.copyTo(tmp);
+  D.copyTo(A);
+  tmp.copyTo(D);
+
+  // swap quadrant (Top-Right with Bottom-Left)
+  C.copyTo(tmp);
+  B.copyTo(C);
+  tmp.copyTo(B);
+}
+
+int main(int argc, char** argv) {
+  cv::Mat image, padded, complexImage;
+  std::vector<cv::Mat> planos; 
+
+  image = imread(argv[1], cv::IMREAD_GRAYSCALE);
+  if (image.empty()) {
+    std::cout << "Erro abrindo imagem" << argv[1] << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // expande a imagem de entrada para o melhor tamanho no qual a DFT pode ser
+  // executada, preenchendo com zeros a lateral inferior direita.
+  int dft_M = cv::getOptimalDFTSize(image.rows);
+  int dft_N = cv::getOptimalDFTSize(image.cols); 
+  cv::copyMakeBorder(image, padded, 0, dft_M - image.rows, 0, dft_N - image.cols, cv::BORDER_CONSTANT, cv::Scalar::all(0));
+
+  // prepara a matriz complexa para ser preenchida
+  // primeiro a parte real, contendo a imagem de entrada
+  planos.push_back(cv::Mat_<float>(padded)); 
+  // depois a parte imaginaria com valores nulos
+  planos.push_back(cv::Mat::zeros(padded.size(), CV_32F));
+
+  // combina os planos em uma unica estrutura de dados complexa
+  cv::merge(planos, complexImage);  
+
+  // calcula a DFT
+  cv::dft(complexImage, complexImage); 
+  swapQuadrants(complexImage);
+
+  // planos[0] : Re(DFT(image)
+  // planos[1] : Im(DFT(image)
+  cv::split(complexImage, planos);
+
+  // calcula o espectro de magnitude e de fase (em radianos)
+  cv::Mat magn, fase;
+  cv::cartToPolar(planos[0], planos[1], magn, fase, false);
+  cv::normalize(fase, fase, 0, 1, cv::NORM_MINMAX);
+
+  // caso deseje apenas o espectro de magnitude da DFT, use:
+  cv::magnitude(planos[0], planos[1], magn); 
+
+  // some uma constante para evitar log(0)
+  // log(1 + sqrt(Re(DFT(image))^2 + Im(DFT(image))^2))
+  magn += cv::Scalar::all(1);
+
+  // calcula o logaritmo da magnitude para exibir
+  // com compressao de faixa dinamica
+  log(magn, magn);
+  cv::normalize(magn, magn, 0, 1, cv::NORM_MINMAX);
+
+  // exibe as imagens processadas
+  cv::imshow("Imagem", image);  
+  cv::imshow("Espectro de magnitude", magn);
+  cv::imshow("Espectro de fase", fase);
+
+  cv::waitKey();
+  return EXIT_SUCCESS;
+}
+----
+
+Como resultado foi obtido o espectro de magnitude mostrado abaixo.
+
+.Resultado do algortimo dftimage.cpp
+image::figuras/magnitude.png[width=250,height=250]
+
+Sabemos que o valor teórico da Transformda de Fourier do seno é:
+
+
+Ao comparar com o valor teórico de
+
+
+=== 7.2 Filtro homomórfico
+
+Utilizando o programa [dftfilter.cpp] como referência, foi implementado o filtro homomórfico para melhorar uma imagem, fornecida é em tons de cinza, com iluminação irregular. 
+
+Primeiramente é preciso entender que o Filtro Homomórfico atenua as baixas-frequências e realça as altas baseando-se no modelo de iluminação-refletância.
+
+Para isso, utilizamos a seguinte equação:
+
+[asciimath]
+++++
+H(u,v)= (\gamma H - \gamma L) (1- e^(-c*(D^2( u,v ))/D_0^2)) + \gamma L
+++++
+
+Onde, o parâmetro da iluminação (γL) é o componente de baixa frequência e o parâmetro da refletância é o de alta frequência (γH). Para aumentar o contraste da imagem a iluminação é diminuída (0 < γL < 1) e a refletância é aumentada (γH > 1).
+
+Assim, os parâmetros do filtro homomórfico foram ajustados para corrigir a iluminação da melhor forma possível.
+
+O algoritmo completo pode ser visualizado abaixo.
+
+.Código 11: dftfilterhomo.cpp
+[source,cpp]
+----
+#include <iostream>
+#include <vector>
+#include <math.h>
+#include <opencv2/opencv.hpp>
+
+void swapQuadrants(cv::Mat& image) {
+  cv::Mat tmp, A, B, C, D;
+
+  // se a imagem tiver tamanho impar, recorta a regiao para o maior
+  // tamanho par possivel (-2 = 1111...1110)
+  image = image(cv::Rect(0, 0, image.cols & -2, image.rows & -2));
+
+  int centerX = image.cols / 2;
+  int centerY = image.rows / 2;
+
+  // rearranja os quadrantes da transformada de Fourier de forma que 
+  // a origem fique no centro da imagem
+  // A B   ->  D C
+  // C D       B A
+  A = image(cv::Rect(0, 0, centerX, centerY));
+  B = image(cv::Rect(centerX, 0, centerX, centerY));
+  C = image(cv::Rect(0, centerY, centerX, centerY));
+  D = image(cv::Rect(centerX, centerY, centerX, centerY));
+
+  // swap quadrants (Top-Left with Bottom-Right)
+  A.copyTo(tmp);
+  D.copyTo(A);
+  tmp.copyTo(D);
+
+  // swap quadrant (Top-Right with Bottom-Left)
+  C.copyTo(tmp);
+  B.copyTo(C);
+  tmp.copyTo(B);
+}
+
+void makeFilter(const cv::Mat &image, cv::Mat &filter){
+  cv::Mat_<float> filter2D(image.rows, image.cols);
+  int centerX = image.cols / 2;
+  int centerY = image.rows / 2;
+  /* Aumenta-se o contraste da imagem ...*/
+  float YH = 1.5; /*e a refletância é aumentada (γH > 1)*/
+  float YL = 0.25; /*se a iluminação é diminuída (0 < γL < 1)*/
+  float c = 1.0; 
+
+  /* Para fazer o filtro homomórfico considera-se a seguinte equação:
+     H(u,v) = (γH − γL)(1 − e^(− c(D²(u,v)/D0²))) + γL
+  */
+
+  for (int i = 0; i < image.rows; i++){
+    for (int j = 0; j < image.cols; j++){
+      float D = sqrt(pow(i-centerY,2) + pow(j-centerX,2));
+      float H = (YH - YL) * (1.0 - exp(-c * (pow(D,2) / pow(centerX,2)))) + YL;
+      filter2D.at<float>(i, j) = H;
+    }
+  }
+  cv::Mat planes[] = {cv::Mat_<float>(filter2D), cv::Mat::zeros(filter2D.size(), CV_32F)};
+  cv::merge(planes, 2, filter);
+}
+
+int main(int argc, char** argv) {
+  cv::Mat image, padded, complexImage;
+  std::vector<cv::Mat> planos; 
+
+  image = imread(argv[1], cv::IMREAD_GRAYSCALE);
+  if (image.empty()) {
+    std::cout << "Erro abrindo imagem" << argv[1] << std::endl;
+    return EXIT_FAILURE;
+  }
+
+
+  // expande a imagem de entrada para o melhor tamanho no qual a DFT pode ser
+  // executada, preenchendo com zeros a lateral inferior direita.
+  int dft_M = cv::getOptimalDFTSize(image.rows);
+  int dft_N = cv::getOptimalDFTSize(image.cols); 
+  cv::copyMakeBorder(image, padded, 0, dft_M - image.rows, 0, dft_N - image.cols, cv::BORDER_CONSTANT, cv::Scalar::all(0));
+
+  // prepara a matriz complexa para ser preenchida
+  // primeiro a parte real, contendo a imagem de entrada
+  planos.push_back(cv::Mat_<float>(padded)); 
+  // depois a parte imaginaria com valores nulos
+  planos.push_back(cv::Mat::zeros(padded.size(), CV_32F));
+
+  // combina os planos em uma unica estrutura de dados complexa
+  cv::merge(planos, complexImage);  
+
+  // calcula a DFT
+  cv::dft(complexImage, complexImage); 
+  swapQuadrants(complexImage);
+
+  // cria o filtro ideal e aplica a filtragem de frequencia
+  cv::Mat filter;
+  makeFilter(complexImage, filter);
+  cv::mulSpectrums(complexImage, filter, complexImage, 0);
+
+  // calcula a DFT inversa
+  swapQuadrants(complexImage);
+  cv::idft(complexImage, complexImage);
+
+  // planos[0] : Re(DFT(image)
+  // planos[1] : Im(DFT(image)
+  cv::split(complexImage, planos);
+
+  // recorta a imagem filtrada para o tamanho original
+  // selecionando a regiao de interesse (roi)
+  cv::Rect roi(0, 0, image.cols, image.rows);
+  cv::Mat result = planos[0](roi);
+
+  // normaliza a parte real para exibicao
+  cv::normalize(result, result, 0, 1, cv::NORM_MINMAX);
+
+  cv::imshow("original", image);
+  cv::imshow("filtrada", result);
+  cv::imwrite("dft-filter.png", result * 255);
+
+  cv::waitKey();
+  return EXIT_SUCCESS;
+}
+----
+
+O algoritmo original, dftfilter.cpp, sofreu alteração somente na função "filter", que foi alterada a equação anterior para receber a equação do filtro homomórfico.
+
+Para testar o algortimo foi utilizada a imagem abaixo. Nela há uma iluminação focada na mulher, enquanto o restante do cenário recebe pouca iluminação.
+
+.Imagem com iluminação focada na mulher
+image::figuras/img.png[width=400,height=400]
+
+Os valores de γL e γH foram ajustados para melhorar a distribuição da luz na imagem, resultando no que vemos na imagem apresentada abaixo. Observa-se uma distribuição mais uniforme da luminosidade em toda a imagem, indicando que houve uma melhoria no balanceamento da iluminação.
+
+
+.Imagem com iluminação focada na mulher
+image::figuras/dft-filter.png[width=400,height=400]
+
+== 8 Segmentação de imagens
+=== 8.1 Pontilhismo com algoritmo de Canny 
 
 Utilizando os programas {url-peak10}[canny.cpp] e {url-peak11}[pontilhismo.cpp] como referência, foi implementado o programa cannypoints.cpp. 
 
@@ -932,7 +1206,7 @@ Nos demais pixels da imagem um raio fixo de tamanho 3 será aplicado.
 
 O algoritmo completo pode ser visualizado abaixo.
 
-.Código 10: cannypoints.cpp
+.Código xx: cannypoints.cpp
 [source,cpp]
 ----
 #include <algorithm>
