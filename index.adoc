@@ -1353,5 +1353,3 @@ Aumentei o limiar no algoritmo de Canny para tornar mais visíveis os contornos 
 
 .Resultado do programa com raio 8
 image::figuras/result_flowers.png[width=600,height=600]
-
-== 9 Quantização vetorial com k-means
