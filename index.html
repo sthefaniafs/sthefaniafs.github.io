@@ -492,6 +492,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_8_1_pontilhismo_com_algoritmo_de_canny">8.1 Pontilhismo com algoritmo de Canny</a></li>
 </ul>
 </li>
+<li><a href="#_projeto_final">Projeto Final</a>
+<ul class="sectlevel2">
+<li><a href="#_detector_de_cor_de_uma_região_de_interesse_em_tempo_real">Detector de Cor de uma Região de Interesse em Tempo Real</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -2015,10 +2020,271 @@ int main(int argc, char** argv) {
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_projeto_final">Projeto Final</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_detector_de_cor_de_uma_região_de_interesse_em_tempo_real">Detector de Cor de uma Região de Interesse em Tempo Real</h3>
+<div class="paragraph">
+<p>O projeto apresentado tem por objetivo criar um detector de cores utilizando processamento de imagem em tempo real. A implementação utiliza a biblioteca OpenCV em Python para capturar e analisar frames retirados de uma região de interesse (ROI) de uma webcam.</p>
+</div>
+<div class="paragraph">
+<p>A detecção de cores é realizada no espaço de cores HSV (Matiz, Saturação, Valor). Esse modelo de representação de cores separa as informações em cor, intensidade e brilho, proporcionando uma maneira mais intuitiva de descrever e manipular cores em comparação com o modelo RGB (Vermelho, Verde, Azul).</p>
+</div>
+<div class="paragraph">
+<p>De forma resumida, estes são os componentes do espaço de cores HSV:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Matiz (H):
+   O componente de matiz representa a tonalidade da cor. Ele descreve a cor pura em termos de sua posição angular ao redor do círculo de cores.</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Saturação (S):
+    A saturação refere-se à pureza ou intensidade da cor. Quanto maior a saturação, mais "pura" é a cor, e quanto menor, mais próxima do cinza.</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Valor (V):
+    O componente de valor indica a luminosidade ou brilho da cor. Ele determina a quantidade de luz presente na cor. Valores mais altos resultam em cores mais claras, enquanto valores mais baixos produzem cores mais escuras.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>O algoritmo realiza a média e o desvio padrão dos canais de cor na região escolhida, utilizando a biblioteca NumPy, como um mecanismo para ajustar a sensibilidade da detecção. Essa abordagem permite uma adaptação contínua às mudanças nas condições de iluminação e nas características específicas da cena em análise.</p>
+</div>
+<div class="paragraph">
+<p>O cálculo da média dos canais de cor é para se obter uma representação central da cor predominante na região selecionada, enquanto o desvio padrão oferece uma medida da dispersão ou variabilidade dos tons presentes. Nesse contexto, subtraimos o desvio padrão da média no intuito de tornar a detecção mais específica, concentrando-se em tons de cor mais próximos à média.</p>
+</div>
+<div class="paragraph">
+<p>Abaixo temos o código completo utilizado</p>
+</div>
+<div class="listingblock">
+<div class="title">IdentificadorCor.py</div>
+<div class="content">
+<pre class="highlight"><code class="language-python" data-lang="python">import cv2
+import numpy as np
+
+retangulo = False
+PosicaoROI = []
+
+# função para escolher região em que a cor será detectada
+def desenhar_retangulo(event, x, y, flags, param):
+    global retangulo, PosicaoROI
+
+    if event == cv2.EVENT_LBUTTONDOWN:
+        retangulo = True
+        PosicaoROI = [(x, y)]
+
+    elif event == cv2.EVENT_LBUTTONUP:
+        retangulo = False
+        PosicaoROI.append((x, y))
+        cv2.rectangle(frame, PosicaoROI[0], PosicaoROI[1], (0, 255, 0), 2)
+        cv2.imshow('Webcam', frame)
+
+# função para identificar a cor na região escolhida
+def identificar_cor(roi):
+    roi_hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+
+    # calcule a média da cor na região HSV
+    # a cor será um valor médio da região identificada
+
+    media_cor = np.mean(roi_hsv, axis=(0, 1))
+    desvio_cor = np.std(roi_hsv, axis=(0, 1))
+
+    valorH, valorS, valorV = media_cor[0] - desvio_cor[0], media_cor[1] - desvio_cor[1], media_cor[2] - desvio_cor[2]
+
+    if valorH &lt; 11:
+        if valorV &lt; 50:
+            return "Preto"
+        elif valorS &lt; 50:
+            return "Branco"
+        else:
+            return "Vermelho"
+    elif valorH &lt; 22:
+        if valorV&lt;50:
+            return "Preto"
+        elif valorS &lt; 50:
+            return "Branco"
+        else:
+            return "Laranja"
+    elif valorH &lt; 34:
+        if valorV&lt;50:
+            return "Preto"
+        elif valorS &lt; 50:
+            return "Branco"
+        else:
+            return "Amarelo"
+    elif valorH &lt; 86:
+        if valorV&lt;50:
+            return "Preto"
+        elif valorS &lt; 50:
+            return "Branco"
+        else:
+            return "Verde"
+    elif valorH &lt; 133:
+        if valorV&lt;50:
+            return "Preto"
+        elif valorS &lt; 50:
+            return "Branco"
+        else:
+            return "Azul"
+    elif valorH &lt; 150:
+        if valorV&lt;50:
+            return "Preto"
+        elif valorS &lt; 50:
+            return "Branco"
+        else:
+            return "Violeta"
+    elif valorH &lt; 170:
+        if valorV&lt;50:
+            return "Preto"
+        elif valorS &lt; 50:
+            return "Branco"
+        else:
+            return "Rosa"
+    else:
+        if valorV&lt;50:
+            return "Preto"
+        elif valorS &lt; 50:
+            return "Branco"
+        else:
+            return "Vermelho"
+
+#iniciar câmera
+cap = cv2.VideoCapture(0)
+
+#configura o callback do mouse
+cv2.namedWindow('Webcam')
+cv2.setMouseCallback('Webcam', desenhar_retangulo)
+
+if not cap.isOpened():
+    print("Câmera indisponível")
+else:
+    while True:
+        ret, frame = cap.read()
+
+        if len(PosicaoROI) == 2:
+            roi = frame[PosicaoROI[0][1]:PosicaoROI[1][1], PosicaoROI[0][0]:PosicaoROI[1][0]]
+
+            # realiza a detecção de cor na região de interesse (roi)
+            cor = identificar_cor(roi)
+
+            # escreve a cor identificada
+            cv2.rectangle(frame, PosicaoROI[0], PosicaoROI[1], (0, 255, 0), 2)
+            cv2.putText(frame, f'Cor: {cor}', (20, 60), 0, 0.7, (255, 255, 255), 2)
+
+            # mostra a região de interesse de perto
+            cv2.namedWindow('ROI')
+            roi = cv2.resize(roi, (frame.shape[1], frame.shape[0]))
+            cv2.resizeWindow('ROI', frame.shape[1], frame.shape[0])
+            cv2.imshow('ROI', roi)
+
+
+        cv2.imshow('Webcam', frame)
+        key = cv2.waitKey(1)
+        if key == 27: # se apertar esc fecha
+            break
+
+# liberar os recursos quando terminar
+cap.release()
+cv2.destroyAllWindows()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Explicando o código</strong></p>
+</div>
+<div class="paragraph">
+<p>Para começar, utiliza-se a biblioteca OpenCV para iniciar a captura de vídeo da webcam (<code>cv2.VideoCapture</code>) e configura-se um callback do mouse (<code>cv2.setMouseCallback</code>) para permitir a seleção da região de interesse (ROI) na imagem.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-python" data-lang="python"># Iniciar a câmera
+cap = cv2.VideoCapture(0)
+
+# Configurar o callback do mouse
+cv2.namedWindow('Webcam')
+cv2.setMouseCallback('Webcam', desenhar_retangulo)
+
+# Verificar se a câmera está disponível
+if not cap.isOpened():
+    print("Câmera indisponível")
+else:
+    # ... Restante do código ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A primeira função do programa é <code>desenhar_retangulo</code>, que é chamada sempre que ocorre um evento de clique do mouse. Ela permite ao usuário desenhar um retângulo na tela, indicando a área de interesse.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-python" data-lang="python"># Função para escolher a região em que a cor será detectada
+def desenhar_retangulo(event, x, y, flags, param):
+    global retangulo, PosicaoROI
+
+    if event == cv2.EVENT_LBUTTONDOWN:
+        retangulo = True
+        PosicaoROI = [(x, y)]
+
+    elif event == cv2.EVENT_LBUTTONUP:
+        retangulo = False
+        PosicaoROI.append((x, y))
+        cv2.rectangle(frame, PosicaoROI[0], PosicaoROI[1], (0, 255, 0), 2)
+        cv2.imshow('Webcam', frame)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Em seguida, temos a função <code>identificar_cor</code> que recebe a região de interesse (ROI) já selecionada, converte-a para o espaço de cores HSV e calcula a média e o desvio padrão dos canais de cor. Com base nesses valores, é determinada a cor predominante na região.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-python" data-lang="python"># Função para identificar a cor na região escolhida
+def identificar_cor(roi):
+    roi_hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+
+    # Calcular a média e o desvio padrão da cor na região HSV
+    media_cor = np.mean(roi_hsv, axis=(0, 1))
+    desvio_cor = np.std(roi_hsv, axis=(0, 1))
+
+    # Calcular os valores ajustados para sensibilidade
+    valorH, valorS, valorV = media_cor[0] - desvio_cor[0], media_cor[1] - desvio_cor[1], media_cor[2] - desvio_cor[2]
+
+    # Identificar a cor com base nos valores ajustados
+    if valorH &lt; 11:
+        # ... Restante do código ...
+    # ... (Restante das condições de cor) ...
+    else:
+        # ... Restante do código ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>O código exibe a região de interesse destacada com um retângulo verde, junto com o nome da cor identificada, na janela principal. Além disso, mostra a região de interesse com zoom em uma janela separada.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-python" data-lang="python"># mostrar a região de interesse
+cv2.namedWindow('ROI')
+roi = cv2.resize(roi, (frame.shape[1], frame.shape[0]))
+cv2.resizeWindow('ROI', frame.shape[1], frame.shape[0])
+cv2.imshow('ROI', roi)
+
+# Mostrar a cor identificada na tela principal
+cv2.rectangle(frame, PosicaoROI[0], PosicaoROI[1], (0, 255, 0), 2)
+cv2.putText(frame, f'Cor: {cor}', (20, 60), 0, 0.7, (255, 255, 255), 2)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>mostrar exemplos</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-12-04 20:52:55 -0300
+Last updated 2023-12-17 00:35:54 -0300
 </div>
 </div>
 <script type="text/x-mathjax-config">
