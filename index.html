@@ -2054,10 +2054,10 @@ int main(int argc, char** argv) {
 </div>
 </div>
 <div class="paragraph">
-<p>O algoritmo realiza a média e o desvio padrão dos canais de cor na região escolhida, utilizando a biblioteca NumPy, como um mecanismo para ajustar a sensibilidade da detecção. Essa abordagem permite uma adaptação contínua às mudanças nas condições de iluminação e nas características específicas da cena em análise.</p>
+<p>O algoritmo realiza a média e o desvio padrão dos canais de cor na região escolhida, utilizando a biblioteca NumPy, como um mecanismo para ajustar a sensibilidade da detecção. Essa abordagem permite uma adaptação às mudanças nas condições de iluminação podendo ocorrer a identificação de cores diferentes para um mesmo objeto com iluminação distinta.</p>
 </div>
 <div class="paragraph">
-<p>O cálculo da média dos canais de cor é para se obter uma representação central da cor predominante na região selecionada, enquanto o desvio padrão oferece uma medida da dispersão ou variabilidade dos tons presentes. Nesse contexto, subtraimos o desvio padrão da média no intuito de tornar a detecção mais específica, concentrando-se em tons de cor mais próximos à média.</p>
+<p>O cálculo da média dos canais de cor é para se obter uma representação central da cor predominante na região selecionada, enquanto o desvio padrão oferece uma medida da dispersão ou variabilidade dos tons presentes. Nesse contexto, subtraí o desvio padrão da média no intuito de tornar a detecção mais específica, concentrando-se em tons de cor mais próximos à média.</p>
 </div>
 <div class="paragraph">
 <p>Abaixo temos o código completo utilizado</p>
@@ -2239,9 +2239,6 @@ def desenhar_retangulo(event, x, y, flags, param):
 <div class="paragraph">
 <p>Em seguida, temos a função 'identificar_cor' que recebe a região de interesse (ROI), já selecionada na função 'desenhar_retangulo', converte-a para o espaço de cores HSV e calcula a média e o desvio padrão dos canais de cor. Com base nesses valores, é determinada a cor predominante na região.</p>
 </div>
-<div class="paragraph">
-<p>Optei por subtrair o desvio padrão da média para diminuir o intervalo de cores considerado na detecção. O objetivo foi tornar a detecção mais específica, concentrando-se em tons de cor mais próximos à média.</p>
-</div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-python" data-lang="python"># Função para identificar a cor na região escolhida
@@ -2288,7 +2285,7 @@ cv2.putText(frame, f'Cor: {cor}', (20, 60), 0, 0.7, (255, 255, 255), 2)</code></
 <div class="videoblock">
 <div class="title">Teste do dectetor de cores</div>
 <div class="content">
-<video src="figuras/testpdi.mp4" controls>
+<video src="figuras/testpdi.mp4" poster="][width=640" autoplay controls>
 Your browser does not support the video tag.
 </video>
 </div>
@@ -2308,7 +2305,7 @@ Your browser does not support the video tag.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-12-18 16:56:15 -0300
+Last updated 2023-12-18 17:02:52 -0300
 </div>
 </div>
 <script type="text/x-mathjax-config">

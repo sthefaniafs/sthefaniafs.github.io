@@ -1375,9 +1375,9 @@ De forma resumida, estes são os componentes do espaço de cores HSV:
     Valor (V):
         O componente de valor indica a luminosidade ou brilho da cor. Ele determina a quantidade de luz presente na cor. Valores mais altos resultam em cores mais claras, enquanto valores mais baixos produzem cores mais escuras.
 
-O algoritmo realiza a média e o desvio padrão dos canais de cor na região escolhida, utilizando a biblioteca NumPy, como um mecanismo para ajustar a sensibilidade da detecção. Essa abordagem permite uma adaptação contínua às mudanças nas condições de iluminação e nas características específicas da cena em análise.
+O algoritmo realiza a média e o desvio padrão dos canais de cor na região escolhida, utilizando a biblioteca NumPy, como um mecanismo para ajustar a sensibilidade da detecção. Essa abordagem permite uma adaptação às mudanças nas condições de iluminação podendo ocorrer a identificação de cores diferentes para um mesmo objeto com iluminação distinta.
 
-O cálculo da média dos canais de cor é para se obter uma representação central da cor predominante na região selecionada, enquanto o desvio padrão oferece uma medida da dispersão ou variabilidade dos tons presentes. Nesse contexto, subtraimos o desvio padrão da média no intuito de tornar a detecção mais específica, concentrando-se em tons de cor mais próximos à média.
+O cálculo da média dos canais de cor é para se obter uma representação central da cor predominante na região selecionada, enquanto o desvio padrão oferece uma medida da dispersão ou variabilidade dos tons presentes. Nesse contexto, subtraí o desvio padrão da média no intuito de tornar a detecção mais específica, concentrando-se em tons de cor mais próximos à média.
 
 Abaixo temos o código completo utilizado
 
@@ -1550,8 +1550,6 @@ def desenhar_retangulo(event, x, y, flags, param):
         cv2.imshow('Webcam', frame)
 ```
 Em seguida, temos a função 'identificar_cor' que recebe a região de interesse (ROI), já selecionada na função 'desenhar_retangulo', converte-a para o espaço de cores HSV e calcula a média e o desvio padrão dos canais de cor. Com base nesses valores, é determinada a cor predominante na região.
-
-Optei por subtrair o desvio padrão da média para diminuir o intervalo de cores considerado na detecção. O objetivo foi tornar a detecção mais específica, concentrando-se em tons de cor mais próximos à média.
  
 ```python
 # Função para identificar a cor na região escolhida
@@ -1592,7 +1590,7 @@ Para mostrar o funcionamento do algoritmo, foi gravado um vídeo contendo objeto
 Essas pequenas limitações podem ser atribuídas ao fato de que a escolha da escala de cores HSV foi feita de forma empírica. Um refinamento mais preciso dessa escala pode ser necessário para lidar com variações sutis nas condições de iluminação. 
 
 .Teste do dectetor de cores
-video::figuras/testpdi.mp4[]
+video::figuras/testpdi.mp4[][width=640,opts=autoplay]
 
 === Referências
 
