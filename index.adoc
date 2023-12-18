@@ -1589,8 +1589,8 @@ Para mostrar o funcionamento do algoritmo, foi gravado um vídeo contendo objeto
 
 Essas pequenas limitações podem ser atribuídas ao fato de que a escolha da escala de cores HSV foi feita de forma empírica. Um refinamento mais preciso dessa escala pode ser necessário para lidar com variações sutis nas condições de iluminação. 
 
-.Teste do dectetor de cores
-video::figuras/testpdi.mp4[width=640,opts=autoplay]
+.Teste do detector de cores
+video::figuras/testpdi.mp4[width=720,opts=autoplay]
 
 === Referências
 
