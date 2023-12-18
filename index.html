@@ -495,6 +495,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_projeto_final">Projeto Final</a>
 <ul class="sectlevel2">
 <li><a href="#_detector_de_cor_de_uma_região_de_interesse_em_tempo_real">Detector de Cor de uma Região de Interesse em Tempo Real</a></li>
+<li><a href="#_referências">Referências</a></li>
 </ul>
 </li>
 </ul>
@@ -2197,7 +2198,7 @@ cv2.destroyAllWindows()</code></pre>
 <p><strong>Explicando o código</strong></p>
 </div>
 <div class="paragraph">
-<p>Para começar, utiliza-se a biblioteca OpenCV para iniciar a captura de vídeo da webcam (<code>cv2.VideoCapture</code>) e configura-se um callback do mouse (<code>cv2.setMouseCallback</code>) para permitir a seleção da região de interesse (ROI) na imagem.</p>
+<p>Para começar, utiliza-se a biblioteca OpenCV para iniciar a captura de vídeo da webcam (cv2.VideoCapture) e configura-se um callback do mouse (cv2.setMouseCallback) para permitir a seleção da região de interesse (ROI) na imagem.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2216,7 +2217,7 @@ else:
 </div>
 </div>
 <div class="paragraph">
-<p>A primeira função do programa é <code>desenhar_retangulo</code>, que é chamada sempre que ocorre um evento de clique do mouse. Ela permite ao usuário desenhar um retângulo na tela, indicando a área de interesse.</p>
+<p>A primeira função do programa é 'desenhar_retangulo', que é chamada sempre que ocorre um evento de clique do mouse. Então ao clicar no botão esquerdo do mouse, o usuário especifica as coordenadas (x, y) para iniciar o retângulo, e ao soltar o botão, as coordenadas correspondentes ao fim do retângulo são registradas. Essa função possibilita ao usuário desenhar um retângulo na tela, delimitando uma área específica de interesse.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2236,7 +2237,10 @@ def desenhar_retangulo(event, x, y, flags, param):
 </div>
 </div>
 <div class="paragraph">
-<p>Em seguida, temos a função <code>identificar_cor</code> que recebe a região de interesse (ROI) já selecionada, converte-a para o espaço de cores HSV e calcula a média e o desvio padrão dos canais de cor. Com base nesses valores, é determinada a cor predominante na região.</p>
+<p>Em seguida, temos a função 'identificar_cor' que recebe a região de interesse (ROI), já selecionada na função 'desenhar_retangulo', converte-a para o espaço de cores HSV e calcula a média e o desvio padrão dos canais de cor. Com base nesses valores, é determinada a cor predominante na região.</p>
+</div>
+<div class="paragraph">
+<p>Optei por subtrair o desvio padrão da média para diminuir o intervalo de cores considerado na detecção. O objetivo foi tornar a detecção mais específica, concentrando-se em tons de cor mais próximos à média.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2260,7 +2264,7 @@ def identificar_cor(roi):
 </div>
 </div>
 <div class="paragraph">
-<p>O código exibe a região de interesse destacada com um retângulo verde, junto com o nome da cor identificada, na janela principal. Além disso, mostra a região de interesse com zoom em uma janela separada.</p>
+<p>Para visualização da região de interesse selecionada na tela da webcam inseri um retângulo verde. Adicionalmente, a cor identificada é exibida no canto superior esquerdo da janela principal. Além disso, uma visualização detalhada da região de interesse, ampliada, é apresentada em uma janela separada. Essa abordagem foi com o intuito de permitir uma visualização clara da região de interesse do usuário.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2276,7 +2280,27 @@ cv2.putText(frame, f'Cor: {cor}', (20, 60), 0, 0.7, (255, 255, 255), 2)</code></
 </div>
 </div>
 <div class="paragraph">
-<p>mostrar exemplos</p>
+<p>Para mostrar o funcionamento do algoritmo, foi gravado um vídeo contendo objetos de diversas cores. Durante a análise, observou-se que ao identificar um objeto em condições de iluminação não uniforme, como o objeto amarelo do vídeo, o algoritmo apresenta algumas incertezas em relação à cor do objeto. Em determinadas situações, ocorre uma indecisão entre considerar o objeto como amarelo ou laranja, levando a resultados de cor variáveis para o mesmo objeto.</p>
+</div>
+<div class="paragraph">
+<p>Essas pequenas limitações podem ser atribuídas ao fato de que a escolha da escala de cores HSV foi feita de forma empírica. Um refinamento mais preciso dessa escala pode ser necessário para lidar com variações sutis nas condições de iluminação.</p>
+</div>
+<div class="videoblock">
+<div class="title">Teste do dectetor de cores</div>
+<div class="content">
+<video src="figuras/testpdi.mp4" controls>
+Your browser does not support the video tag.
+</video>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_referências">Referências</h3>
+<div class="paragraph">
+<p><a href="https://youtu.be/t71sQ6WY7L4">Simple Color recognition with Opencv and Python</a></p>
+</div>
+<div class="paragraph">
+<p><a href="https://pyimagesearch.com/2015/03/09/capturing-mouse-click-events-with-python-and-opencv/">Capturing mouse click events with Python and OpenCV</a></p>
 </div>
 </div>
 </div>
@@ -2284,7 +2308,7 @@ cv2.putText(frame, f'Cor: {cor}', (20, 60), 0, 0.7, (255, 255, 255), 2)</code></
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-12-17 00:35:54 -0300
+Last updated 2023-12-18 16:56:15 -0300
 </div>
 </div>
 <script type="text/x-mathjax-config">
